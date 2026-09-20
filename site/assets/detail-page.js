@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 14:15:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-20 14:15:00
+ * @Last Modified time: 2026-09-20 14:35:00
  */
 (function () {
   var kind = document.body.getAttribute("data-detail-kind") || "servers";
@@ -36,7 +36,10 @@
   }
 
   function parseRepo(raw) {
-    var clean = String(raw || "").replace(/^https?:\/\/github\.com\//i, "").replace(/\.git$/, "").replace(/\/$/, "");
+    var clean = String(raw || "")
+      .replace(/^https?:\/\/github\.com\//i, "")
+      .replace(/\.git$/, "")
+      .replace(/\/$/, "");
     var parts = clean.split("/").filter(Boolean);
     if (parts.length >= 2) return { owner: parts[0], name: parts[1], full: parts[0] + "/" + parts[1] };
     if (parts.length === 1) {
@@ -65,32 +68,105 @@
     });
   }
 
-  function fetchReadme(owner, name) {
+  function fetchRaw(owner, name, path) {
     var branches = ["main", "master"];
     function tryBranch(i) {
       if (i >= branches.length) return Promise.resolve("");
-      var url = "https://raw.githubusercontent.com/" + owner + "/" + name + "/" + branches[i] + "/README.md";
-      return fetch(url).then(function (res) {
-        if (!res.ok) return tryBranch(i + 1);
-        return res.text();
-      }).catch(function () {
-        return tryBranch(i + 1);
-      });
+      var url =
+        "https://raw.githubusercontent.com/" + owner + "/" + name + "/" + branches[i] + "/" + path;
+      return fetch(url)
+        .then(function (res) {
+          if (!res.ok) return tryBranch(i + 1);
+          return res.text();
+        })
+        .catch(function () {
+          return tryBranch(i + 1);
+        });
     }
     return tryBranch(0);
   }
 
-  function installSnippet(item, full) {
+  function fetchDoc(owner, name) {
     if (kind === "skills") {
-      return "npx -y skills add https://github.com/" + full + " --agent cursor";
+      return fetchRaw(owner, name, "SKILL.md").then(function (text) {
+        if (text) return { source: "SKILL.md", body: text };
+        return fetchRaw(owner, name, "README.md").then(function (readme) {
+          return { source: "README.md", body: readme || "" };
+        });
+      });
     }
-    var pkg = item.name || full.split("/")[1];
-    var cfg = { mcpServers: {} };
-    cfg.mcpServers[pkg] = {
-      command: "uvx",
-      args: ["--from", "git+https://github.com/" + full + ".git", pkg]
-    };
-    return JSON.stringify(cfg, null, 2);
+    return fetchRaw(owner, name, "README.md").then(function (readme) {
+      return { source: "README.md", body: readme || "" };
+    });
+  }
+
+  function fetchInstallConfig(owner, name, item, full) {
+    if (kind === "skills") {
+      return Promise.resolve({
+        label: "Install (Cursor)",
+        body: "npx -y skills add https://github.com/" + full + " --agent cursor",
+        tips: [
+          "Make sure Node.js is on your PATH",
+          "Change <code>--agent</code> for your host when supported (e.g. <code>claude</code>, <code>opencode</code>)",
+          "Start a new chat after install so the skill loads"
+        ]
+      });
+    }
+
+    return fetchRaw(owner, name, "cursor.mcp.fragment.json").then(function (raw) {
+      var body = "";
+      if (raw) {
+        try {
+          body = JSON.stringify(JSON.parse(raw), null, 2);
+        } catch (err) {
+          body = raw.trim();
+        }
+      }
+      if (!body) {
+        var pkg = item.packageName || item.name || full.split("/")[1];
+        var cfg = { mcpServers: {} };
+        cfg.mcpServers[pkg] = {
+          command: "uvx",
+          args: ["--from", "git+https://github.com/" + full + ".git", pkg]
+        };
+        body = JSON.stringify(cfg, null, 2);
+      }
+      return {
+        label: "Cursor MCP config",
+        body: body,
+        tips: [
+          "Merge this JSON into your Cursor MCP settings, then restart Cursor",
+          "Install <code>uv</code> so <code>uvx</code> is on your PATH",
+          "Open the GitHub README for host-specific setup (addon, extension, or daemon)",
+          "Confirm the MCP server appears in your host tool list"
+        ]
+      };
+    });
+  }
+
+  function extractHighlights(doc, item) {
+    var lines = String(doc || "").split(/\r?\n/);
+    var bullets = [];
+    var i;
+    for (i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      var m = line.match(/^[-*+]\s+(.+)/);
+      if (!m) continue;
+      var text = m[1]
+        .replace(/\*\*/g, "")
+        .replace(/`([^`]+)`/g, "$1")
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .trim();
+      if (text.length < 8 || text.length > 140) continue;
+      if (/^https?:\/\//i.test(text)) continue;
+      if (/license|contact|email|copyright/i.test(text)) continue;
+      bullets.push(text);
+      if (bullets.length >= 6) break;
+    }
+    if (bullets.length) return bullets;
+    return (item.tags || []).slice(0, 6).map(function (tag) {
+      return String(tag).replace(/-/g, " ");
+    });
   }
 
   function pillsHtml(item) {
@@ -117,14 +193,93 @@
     return parts.join("");
   }
 
-  function render(item, readme) {
+  function overviewMetaHtml(item) {
+    var root = (window.RogueSite && RogueSite.root && RogueSite.root()) || base;
+    var bits = [];
+    if (item.category) {
+      bits.push(
+        'Category: <a href="' +
+          esc(root + kind + "/search/?category=" + encodeURIComponent(item.category)) +
+          '">' +
+          esc(item.category) +
+          "</a>"
+      );
+    }
+    if (item.tags && item.tags.length) {
+      var tagLinks = item.tags
+        .map(function (tag) {
+          return (
+            '<a href="' +
+            esc(root + kind + "/search/?tag=" + encodeURIComponent(tag)) +
+            '">' +
+            esc(tag) +
+            "</a>"
+          );
+        })
+        .join(", ");
+      bits.push("Tags: " + tagLinks);
+    }
+    return bits.join(" · ");
+  }
+
+  function aboutHtml(item, full, github) {
+    var parts = [];
+    parts.push("<p>" + esc(item.description || "No description yet.") + "</p>");
+
+    parts.push("<h3>Repository</h3><ul>");
+    parts.push(
+      "<li>Owner: <a href=\"https://github.com/" +
+        esc(item.owner || full.split("/")[0]) +
+        "\" rel=\"noopener\">" +
+        esc(item.owner || full.split("/")[0]) +
+        "</a></li>"
+    );
+    parts.push(
+      "<li>Repo: <a href=\"" + esc(github) + "\" rel=\"noopener\">" + esc(full) + "</a></li>"
+    );
+    if (item.language) parts.push("<li>Language: " + esc(item.language) + "</li>");
+    if (typeof item.stars === "number") parts.push("<li>Stars: " + esc(String(item.stars)) + "</li>");
+    if (item.addedAt) parts.push("<li>Created: " + esc(item.addedAt) + "</li>");
+    if (item.homepage) {
+      parts.push(
+        "<li>Homepage: <a href=\"" + esc(item.homepage) + "\" rel=\"noopener\">" + esc(item.homepage) + "</a></li>"
+      );
+    }
+    parts.push("</ul>");
+
+    if (kind === "skills") {
+      parts.push("<h3>When to use</h3><ul>");
+      parts.push("<li>Install this skill when your agent needs the workflow described above</li>");
+      parts.push("<li>Use it in a fresh chat after install so the host loads the skill file</li>");
+      parts.push("<li>Point the agent at the linked GitHub repo for the canonical skill source</li>");
+      parts.push("</ul>");
+    } else {
+      parts.push("<h3>When to use</h3><ul>");
+      parts.push("<li>Connect this MCP server when your agent needs the tools in the README</li>");
+      parts.push("<li>Keep any required desktop app or daemon running before calling tools</li>");
+      parts.push("<li>Restart the host after updating MCP config so tools register</li>");
+      parts.push("</ul>");
+    }
+
+    if (item.tags && item.tags.length) {
+      parts.push("<h3>Topics</h3><ul>");
+      item.tags.forEach(function (tag) {
+        parts.push("<li>" + esc(tag) + "</li>");
+      });
+      parts.push("</ul>");
+    }
+
+    return parts.join("");
+  }
+
+  function render(item, doc, install) {
     var full = item.githubRepo || item.owner + "/" + item.name;
     var github = item.githubUrl || item.htmlUrl || "https://github.com/" + full;
     var title = item.name || full.split("/")[1];
     var desc = item.description || "No description yet.";
     var owner = item.owner || full.split("/")[0];
     var badge = item.badge || (kind === "servers" ? "MCP" : title.slice(0, 2).toUpperCase());
-    var install = installSnippet(item, full);
+    var highlights = extractHighlights(doc.body, item);
 
     document.title = title + (kind === "skills" ? " — Skill" : " — MCP Server") + " - Rogue Market Agent";
     var metaDesc = document.querySelector('meta[name="description"]');
@@ -145,23 +300,46 @@
 
     setHtml("[data-detail-pills]", pillsHtml(item) || '<span class="pill">Other</span>');
     setText("[data-detail-overview]", desc);
-    setText("[data-detail-about]", desc);
-    setText("[data-readme]", readme || "README.md not found.");
-    setText("[data-install-cmd]", install);
+
+    var highlightEl = document.querySelector("[data-detail-highlights]");
+    if (highlightEl) {
+      if (highlights.length) {
+        highlightEl.hidden = false;
+        highlightEl.innerHTML = highlights.map(function (h) {
+          return "<li>" + esc(h) + "</li>";
+        }).join("");
+      } else {
+        highlightEl.innerHTML = "";
+        highlightEl.hidden = true;
+      }
+    }
+
+    setHtml("[data-detail-overview-meta]", overviewMetaHtml(item));
+    setHtml("[data-detail-about]", aboutHtml(item, full, github));
+
+    setText("[data-readme-source]", doc.source || "README.md");
+    setText("[data-readme]", doc.body || (doc.source || "README.md") + " not found.");
+
+    var installIntro = document.querySelector("[data-install-intro]");
+    if (installIntro) {
+      installIntro.textContent =
+        kind === "skills"
+          ? "Install the skill on your preferred agent host with the command below."
+          : "Add this configuration to your agent host, then restart the host.";
+    }
 
     var label = document.querySelector("[data-install-label]");
-    if (label) label.textContent = kind === "skills" ? "Install (Cursor)" : "Cursor MCP config";
+    if (label) label.textContent = install.label;
+
+    setText("[data-install-cmd]", install.body);
 
     var tipList = document.querySelector("[data-install-tips]");
     if (tipList) {
-      tipList.innerHTML =
-        kind === "skills"
-          ? "<li>Make sure Node.js is on your PATH</li>" +
-            "<li>Change <code>--agent</code> for your host when supported</li>" +
-            "<li>Start a new chat after install so the skill loads</li>"
-          : "<li>Restart Cursor after saving MCP config</li>" +
-            "<li>Open the linked GitHub repo for addon or extension setup</li>" +
-            "<li>Confirm the MCP server appears in your host tool list</li>";
+      tipList.innerHTML = (install.tips || [])
+        .map(function (tip) {
+          return "<li>" + tip + "</li>";
+        })
+        .join("");
     }
 
     var loading = document.querySelector("[data-detail-loading]");
@@ -178,29 +356,54 @@
     setText("[data-detail-loading]", msg || "Item not found.");
   }
 
+  function mergeRepo(item, repo) {
+    return {
+      name: item.name || repo.name,
+      owner: item.owner || (repo.owner && repo.owner.login) || parseRepo(repo.full_name).owner,
+      githubRepo: item.githubRepo || repo.full_name,
+      githubUrl: item.githubUrl || repo.html_url,
+      description: item.description || repo.description || "No description yet.",
+      category: item.category || "Other",
+      tags: item.tags && item.tags.length ? item.tags : Array.isArray(repo.topics) ? repo.topics : [],
+      badge: item.badge || (kind === "servers" ? "MCP" : (repo.name || "").slice(0, 2).toUpperCase()),
+      stars: typeof item.stars === "number" ? item.stars : repo.stargazers_count || 0,
+      language: item.language || repo.language || "",
+      homepage: item.homepage || repo.homepage || "",
+      addedAt: item.addedAt || (repo.created_at || "").slice(0, 10),
+      packageName: item.packageName || ""
+    };
+  }
+
   function loadItem(parsed) {
     var fromCatalog = findInCatalog(parsed.full);
-    var itemPromise = fromCatalog
-      ? Promise.resolve(fromCatalog)
-      : fetchRepo(parsed.full).then(function (repo) {
-          return {
-            name: repo.name,
-            owner: (repo.owner && repo.owner.login) || parsed.owner,
-            githubRepo: repo.full_name,
-            githubUrl: repo.html_url,
-            description: repo.description || "No description yet.",
-            category: "Other",
-            tags: Array.isArray(repo.topics) ? repo.topics : [],
-            badge: kind === "servers" ? "MCP" : repo.name.slice(0, 2).toUpperCase(),
-            stars: repo.stargazers_count || 0
-          };
-        });
 
-    return itemPromise.then(function (item) {
-      return fetchReadme(parsed.owner, parsed.name).then(function (readme) {
-        render(item, readme);
+    return fetchRepo(parsed.full)
+      .then(function (repo) {
+        var baseItem = fromCatalog || {
+          name: repo.name,
+          owner: (repo.owner && repo.owner.login) || parsed.owner,
+          githubRepo: repo.full_name,
+          githubUrl: repo.html_url,
+          description: repo.description || "No description yet.",
+          category: "Other",
+          tags: Array.isArray(repo.topics) ? repo.topics : [],
+          badge: kind === "servers" ? "MCP" : repo.name.slice(0, 2).toUpperCase(),
+          stars: repo.stargazers_count || 0
+        };
+        return mergeRepo(baseItem, repo);
+      })
+      .catch(function () {
+        if (fromCatalog) return fromCatalog;
+        throw new Error("repo missing");
+      })
+      .then(function (item) {
+        return Promise.all([
+          fetchDoc(parsed.owner, parsed.name),
+          fetchInstallConfig(parsed.owner, parsed.name, item, parsed.full)
+        ]).then(function (parts) {
+          render(item, parts[0], parts[1]);
+        });
       });
-    });
   }
 
   function start() {

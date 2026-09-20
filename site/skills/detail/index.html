@@ -94,22 +94,24 @@
           <article class="detail-panel is-active" data-panel="overview" role="tabpanel">
             <h2>Overview</h2>
             <p data-detail-overview></p>
+            <ul class="detail-highlights" data-detail-highlights></ul>
+            <p class="detail-note" data-detail-overview-meta></p>
           </article>
 
           <article class="detail-panel" data-panel="about" role="tabpanel" hidden>
             <h2>About</h2>
-            <p data-detail-about></p>
+            <div data-detail-about></div>
           </article>
 
           <article class="detail-panel" data-panel="readme" role="tabpanel" hidden>
             <h2>README</h2>
-            <p class="detail-note">Source: <code>README.md</code></p>
+            <p class="detail-note">Source: <code data-readme-source>README.md</code></p>
             <pre class="skill-md" data-readme>Loading…</pre>
           </article>
 
           <article class="detail-panel" data-panel="installation" role="tabpanel" hidden>
             <h2>Installation</h2>
-            <p>Install the skill on your preferred agent host with the command below.</p>
+            <p data-install-intro>Install the skill on your preferred agent host with the command below.</p>
             <div class="install" aria-label="Install command">
               <p class="install-label" data-install-label>Install (Cursor)</p>
               <div class="install-row">

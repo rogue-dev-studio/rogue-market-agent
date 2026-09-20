@@ -23,7 +23,7 @@
     <p class="empty-state" data-detail-loading>Loading…</p>
 
     <div data-detail-main hidden>
-      <div class="detail-hero">
+      <section class="detail-hero">
         <nav class="crumb-pill" aria-label="Breadcrumb">
           <a href="../../" class="crumb-home" aria-label="Home">
             <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
@@ -80,7 +80,7 @@
 
         <p class="lede detail-lede" data-detail-lede></p>
         <div class="pill-row" aria-label="Category and tags" data-detail-pills></div>
-      </div>
+      </section>
 
       <section class="detail-tabs" data-detail-tabs data-default-tab="overview">
         <div class="detail-tablist" role="tablist" aria-label="MCP server details">
@@ -94,22 +94,24 @@
           <article class="detail-panel is-active" data-panel="overview" role="tabpanel">
             <h2>Overview</h2>
             <p data-detail-overview></p>
+            <ul class="detail-highlights" data-detail-highlights></ul>
+            <p class="detail-note" data-detail-overview-meta></p>
           </article>
 
           <article class="detail-panel" data-panel="about" role="tabpanel" hidden>
             <h2>About</h2>
-            <p data-detail-about></p>
+            <div data-detail-about></div>
           </article>
 
           <article class="detail-panel" data-panel="readme" role="tabpanel" hidden>
             <h2>README</h2>
-            <p class="detail-note">Source: <code>README.md</code></p>
+            <p class="detail-note">Source: <code data-readme-source>README.md</code></p>
             <pre class="skill-md" data-readme>Loading…</pre>
           </article>
 
           <article class="detail-panel" data-panel="installation" role="tabpanel" hidden>
             <h2>Installation</h2>
-            <p>Add this configuration to your agent host, then restart the host.</p>
+            <p data-install-intro>Add this configuration to your agent host, then restart the host.</p>
             <div class="install" aria-label="Install command">
               <p class="install-label" data-install-label>Cursor MCP config</p>
               <div class="install-row">

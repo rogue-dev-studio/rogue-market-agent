@@ -20,7 +20,7 @@
   <div class="page">
     <header class="top" data-site-nav></header>
 
-    <div class="detail-hero">
+    <section class="detail-hero">
       <nav class="crumb-pill" aria-label="Breadcrumb">
         <a href="../../" class="crumb-home" aria-label="Home">
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
@@ -85,7 +85,7 @@
         <a class="pill pill-link" href="../../servers/search/?tag=Windows">Windows</a>
         <a class="pill pill-link" href="../../servers/search/?tag=macOS">macOS</a>
       </div>
-    </div>
+    </section>
 
     <section class="detail-tabs" data-detail-tabs data-default-tab="overview">
       <div class="detail-tablist" role="tablist" aria-label="MCP server details">
@@ -99,25 +99,21 @@
         <article class="detail-panel is-active" data-panel="overview" role="tabpanel">
           <h2>Overview</h2>
           <p>An MCP server that connects Adobe Illustrator to AI agents: read designs, edit objects, export assets, and run pre-press checks.</p>
-          <div class="server-grid">
-            <section class="panel">
-              <h3>Key Features</h3>
-              <ol class="feature-list">
-                <li><span class="feature-num">01</span><span>Stable object tracking across tool calls</span></li>
-                <li><span class="feature-num">02</span><span>Read, modify, and export Illustrator data</span></li>
-                <li><span class="feature-num">03</span><span>Web-standard coordinates (Y-down)</span></li>
-                <li><span class="feature-num">04</span><span>Works on macOS and Windows</span></li>
-              </ol>
-            </section>
-            <section class="panel">
-              <h3>Use Cases</h3>
-              <ol class="usecase-list">
-                <li><span class="feature-num">01</span><span>Extract text, colors, and objects for web handoff</span></li>
-                <li><span class="feature-num">02</span><span>Automate SVG / PNG / JPG / PDF exports</span></li>
-                <li><span class="feature-num">03</span><span>Run pre-press checks before delivery</span></li>
-              </ol>
-            </section>
-          </div>
+          <ul class="detail-highlights">
+            <li>Stable object tracking across tool calls</li>
+            <li>Read, modify, and export Illustrator data</li>
+            <li>Web-standard coordinates (Y-down)</li>
+            <li>Works on macOS and Windows</li>
+          </ul>
+          <p class="detail-note">
+            Category:
+            <a href="../../servers/search/?category=Design%20Tools">Design Tools</a>
+            · Tags:
+            <a href="../../servers/search/?tag=MCP">MCP</a>,
+            <a href="../../servers/search/?tag=Design">Design</a>,
+            <a href="../../servers/search/?tag=Adobe">Adobe</a>,
+            <a href="../../servers/search/?tag=Illustrator">Illustrator</a>
+          </p>
         </article>
 
         <article class="detail-panel" data-panel="about" role="tabpanel" hidden>
@@ -128,6 +124,12 @@
             <li>Adobe Illustrator desktop installed (ideally running)</li>
             <li>Node.js 18+ for <code>npx</code></li>
             <li>Agent host with MCP support (Cursor, Claude Code, etc.)</li>
+          </ul>
+          <h3>Use cases</h3>
+          <ul>
+            <li>Extract text, colors, and objects for web handoff</li>
+            <li>Automate SVG / PNG / JPG / PDF exports</li>
+            <li>Run pre-press checks before delivery</li>
           </ul>
           <h3>Platforms</h3>
           <ul>

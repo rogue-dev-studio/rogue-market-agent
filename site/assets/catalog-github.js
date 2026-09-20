@@ -15,7 +15,7 @@
   };
 
   function cacheKey(topic) {
-    return "rm-topic-v3:" + topic;
+    return "rm-topic-v4:" + topic;
   }
 
   function readCache(topic) {
@@ -40,13 +40,18 @@
   function pickCategory(topics) {
     var known = catalog.categories || [];
     for (var i = 0; i < topics.length; i++) {
-      var t = topics[i];
+      var t = String(topics[i] || "");
+      var normalized = t.replace(/-/g, " ").toLowerCase();
       for (var j = 0; j < known.length; j++) {
-        if (known[j].toLowerCase() === String(t).replace(/-/g, " ").toLowerCase()) {
+        if (known[j].toLowerCase() === normalized) {
           return known[j];
         }
       }
     }
+    if (topics.indexOf("design-tools") !== -1 || topics.indexOf("blender") !== -1) {
+      return "Design Tools";
+    }
+    if (topics.indexOf("mcp-server") !== -1) return "Developer Tools";
     return "Other";
   }
 
