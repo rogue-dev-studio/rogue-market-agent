@@ -1,0 +1,47 @@
+# Local / IDE (never publish)
+.cursor/
+.vscode/
+*.code-workspace
+
+# Secrets & credentials (never publish)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.token
+*.p12
+*.pfx
+credentials.json
+secrets/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Dependencies / build
+node_modules/
+dist/
+.cache/
+.parcel-cache/
+.turbo/
+coverage/
+
+# Local scratch (not part of Pages)
+reference/
+AGENTS.md
+*.log
+.temp/
+.tmp/
+*.local
+
+# Private attribution (if present)
+.attribution-private.xml
+
+# Workspace E2E project template (local only — not the public market repo)
+docs/
+artifacts/
+notes/
+PROJECT.yaml

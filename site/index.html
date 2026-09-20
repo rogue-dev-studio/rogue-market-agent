@@ -1,0 +1,69 @@
+<!--
+  @Author: rogue-dev-studio
+  @Date: 2026-09-20 10:28:37
+  @Last Modified by: rogue-dev-studio
+  @Last Modified time: 2026-09-20 11:36:00
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rogue Market Agent - Skills, MCP &amp; AI agents</title>
+  <meta name="description" content="Installable agent skills and MCP servers by Rogue Development. Cursor, Claude Code, OpenCode, and more." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body class="theme-galaxy" data-base="./">
+  <div class="galaxy-dust" aria-hidden="true"></div>
+  <div class="page">
+    <header class="top" data-site-nav></header>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><a href="https://rogue-dev-studio.github.io/" rel="noopener">Rogue Development</a></p>
+        <h1>Skills &amp; MCP you can install</h1>
+        <p class="lede">A marketplace of installable skills and MCP servers for Cursor, Claude Code, and other hosts — one place to connect them to your agents.</p>
+      </div>
+      <div class="hero-orbit" data-three-scene data-scene-mode="hero" aria-label="Interactive categories and tags"></div>
+    </section>
+
+    <section id="servers" class="catalog">
+      <div class="section-head">
+        <h2>MCP Servers</h2>
+        <p>Connect tools and apps to your AI agent. <a class="inline-link" href="servers/">Browse all</a></p>
+      </div>
+      <ul class="skill-list catalog-grid" data-home-catalog="servers">
+        <li class="empty-state">Loading…</li>
+      </ul>
+    </section>
+
+    <section id="skills" class="catalog">
+      <div class="section-head">
+        <h2>Agent Skills</h2>
+        <p>Installable agent playbooks for Cursor and other hosts. <a class="inline-link" href="skills/">Browse all</a></p>
+      </div>
+      <ul class="skill-list catalog-grid" data-home-catalog="skills">
+        <li class="empty-state">Loading…</li>
+      </ul>
+    </section>
+
+    <footer class="foot"></footer>
+  </div>
+  <script src="assets/catalog-data.js" defer></script>
+  <script src="assets/catalog-github.js" defer></script>
+  <script src="assets/home-catalog.js" defer></script>
+  <script src="assets/nav.js" defer></script>
+  <script type="module" src="assets/scene.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!--
+  @Author: rogue-dev-studio
+  @Date: 2026-09-20 10:46:47
+  @Last Modified by: rogue-dev-studio
+  @Last Modified time: 2026-09-20 11:08:00
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Top 100 MCP Servers - Rogue Market Agent</title>
+  <meta name="description" content="Discover the highest-ranked MCP servers in the Rogue catalog." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/site.css" />
+</head>
+<body data-base="../../">
+  <div class="page">
+    <header class="top" data-site-nav></header>
+
+    <section class="browse-hero">
+      <p class="breadcrumb"><a href="../../">Home</a> <span>/</span> <a href="../../servers/">MCP Servers</a> <span>/</span> <span aria-current="page">Top</span></p>
+      <h1>Top 100 MCP Servers</h1>
+      <p class="lede">The most popular MCP servers ranked by community signals.</p>
+      <div class="range-toggle" data-top-range role="tablist" aria-label="Ranking range">
+        <button type="button" class="range-btn is-active" data-range="all-time" role="tab" aria-selected="true">All Time</button>
+        <button type="button" class="range-btn" data-range="new" role="tab" aria-selected="false">New</button>
+      </div>
+    </section>
+
+    <section class="catalog" data-catalog="servers" data-mode="top">
+      <ul class="skill-list catalog-grid top-grid" data-catalog-list></ul>
+      <div class="pager" data-catalog-pager></div>
+    </section>
+
+    <footer class="foot">
+      <p>Part of <a href="https://github.com/rogue-dev-studio">Rogue Development</a>.</p>
+    </footer>
+  </div>
+  <script src="../../assets/catalog-data.js" defer></script>
+  <script src="../../assets/catalog-github.js" defer></script>
+  <script src="../../assets/nav.js" defer></script>
+  <script src="../../assets/catalog.js" defer></script>
+  <script src="../../assets/github-stars.js" defer></script>
+</body>
+</html>
