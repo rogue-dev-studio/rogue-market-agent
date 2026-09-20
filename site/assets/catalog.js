@@ -35,14 +35,16 @@
   };
 
   function itemHref(item) {
-    if (item.htmlUrl) return item.htmlUrl;
+    var repo = item.githubRepo || "";
+    if (repo) {
+      return base + kind + "/detail/?repo=" + encodeURIComponent(repo);
+    }
     if (kind === "skills") return base + "skills/" + item.slug + "/";
     return base + "servers/" + item.slug + "/";
   }
 
-  function itemLinkAttrs(item) {
-    if (!item.htmlUrl) return "";
-    return ' target="_blank" rel="noopener"';
+  function itemLinkAttrs() {
+    return "";
   }
 
   function emptyMessage() {

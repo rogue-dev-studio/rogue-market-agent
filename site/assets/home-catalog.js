@@ -2,16 +2,26 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:27:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-20 12:27:00
+ * @Last Modified time: 2026-09-20 14:15:00
  */
 (function () {
+  function detailHref(item, kind) {
+    var base = document.body.getAttribute("data-base") || "./";
+    if (base.slice(-1) !== "/") base += "/";
+    var repo = item.githubRepo || "";
+    if (repo) return base + kind + "/detail/?repo=" + encodeURIComponent(repo);
+    if (item.htmlUrl) return item.htmlUrl;
+    return "#";
+  }
+
   function card(item, kind) {
-    var href = item.htmlUrl || "#";
+    var href = detailHref(item, kind);
     var badge = item.badge || (kind === "servers" ? "MCP" : item.name.slice(0, 2).toUpperCase());
     var meta = (kind === "servers" ? "MCP" : "Skill") + " · " + (item.owner || "rogue-dev-studio");
+    var external = href.indexOf("http") === 0;
     return (
       '<li><a class="skill-card' + (kind === "servers" ? " server-card" : "") +
-      '" href="' + href + '" target="_blank" rel="noopener">' +
+      '" href="' + href + '"' + (external ? ' target="_blank" rel="noopener"' : "") + ">" +
       (kind === "servers"
         ? '<span class="server-card-icon" aria-hidden="true">' + badge + "</span>"
         : "") +
