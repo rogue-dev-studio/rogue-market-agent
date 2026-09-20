@@ -15,7 +15,7 @@
   };
 
   function cacheKey(topic) {
-    return "rm-topic:" + topic;
+    return "rm-topic-v3:" + topic;
   }
 
   function readCache(topic) {

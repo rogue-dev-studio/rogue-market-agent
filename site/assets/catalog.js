@@ -11,12 +11,13 @@
   var kind = root.getAttribute("data-catalog");
   var mode = root.getAttribute("data-mode") || "all";
   var filterStyle = root.getAttribute("data-filter-style") || mode;
-  var base = document.body.getAttribute("data-base") || "./";
-  if (base.slice(-1) !== "/") base += "/";
-
   var pageSize = RogueCatalog.pageSize || 12;
   var items = [];
   var label = kind === "skills" ? "skills" : "MCP servers";
+
+  function siteRoot() {
+    return (window.RogueSite && RogueSite.root && RogueSite.root()) || "/";
+  }
 
   function syncItems() {
     items = kind === "skills"
@@ -35,12 +36,14 @@
   };
 
   function itemHref(item) {
-    var repo = item.githubRepo || "";
-    if (repo) {
-      return base + kind + "/detail/?repo=" + encodeURIComponent(repo);
+    if (window.RogueSite && RogueSite.detailPath) {
+      return RogueSite.detailPath(kind, item);
     }
-    if (kind === "skills") return base + "skills/" + item.slug + "/";
-    return base + "servers/" + item.slug + "/";
+    var root = siteRoot();
+    var repo = item.githubRepo || "";
+    if (repo) return root + kind + "/detail/?repo=" + encodeURIComponent(repo);
+    if (kind === "skills") return root + "skills/" + item.slug + "/";
+    return root + "servers/" + item.slug + "/";
   }
 
   function itemLinkAttrs() {
@@ -55,11 +58,11 @@
   }
 
   function searchHref(category) {
-    return base + kind + "/search/?category=" + encodeURIComponent(category);
+    return siteRoot() + kind + "/search/?category=" + encodeURIComponent(category);
   }
 
   function searchTagHref(tag) {
-    return base + kind + "/search/?tag=" + encodeURIComponent(tag);
+    return siteRoot() + kind + "/search/?tag=" + encodeURIComponent(tag);
   }
 
   function itemTags(item) {

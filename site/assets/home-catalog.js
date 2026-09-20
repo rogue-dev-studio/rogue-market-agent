@@ -2,15 +2,16 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:27:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-20 14:15:00
+ * @Last Modified time: 2026-09-20 14:22:00
  */
 (function () {
   function detailHref(item, kind) {
-    var base = document.body.getAttribute("data-base") || "./";
-    if (base.slice(-1) !== "/") base += "/";
+    if (window.RogueSite && RogueSite.detailPath) {
+      return RogueSite.detailPath(kind, item);
+    }
+    var root = "/";
     var repo = item.githubRepo || "";
-    if (repo) return base + kind + "/detail/?repo=" + encodeURIComponent(repo);
-    if (item.htmlUrl) return item.htmlUrl;
+    if (repo) return root + kind + "/detail/?repo=" + encodeURIComponent(repo);
     return "#";
   }
 
@@ -18,10 +19,9 @@
     var href = detailHref(item, kind);
     var badge = item.badge || (kind === "servers" ? "MCP" : item.name.slice(0, 2).toUpperCase());
     var meta = (kind === "servers" ? "MCP" : "Skill") + " · " + (item.owner || "rogue-dev-studio");
-    var external = href.indexOf("http") === 0;
     return (
       '<li><a class="skill-card' + (kind === "servers" ? " server-card" : "") +
-      '" href="' + href + '"' + (external ? ' target="_blank" rel="noopener"' : "") + ">" +
+      '" href="' + href + '">' +
       (kind === "servers"
         ? '<span class="server-card-icon" aria-hidden="true">' + badge + "</span>"
         : "") +

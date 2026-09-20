@@ -94,11 +94,12 @@
   }
 
   function pillsHtml(item) {
+    var root = (window.RogueSite && RogueSite.root && RogueSite.root()) || base;
     var parts = [];
     if (item.category) {
       parts.push(
         '<a class="pill pill-link" href="' +
-          esc(base + kind + "/search/?category=" + encodeURIComponent(item.category)) +
+          esc(root + kind + "/search/?category=" + encodeURIComponent(item.category)) +
           '">' +
           esc(item.category) +
           "</a>"
@@ -107,7 +108,7 @@
     (item.tags || []).forEach(function (tag) {
       parts.push(
         '<a class="pill pill-link" href="' +
-          esc(base + kind + "/search/?tag=" + encodeURIComponent(tag)) +
+          esc(root + kind + "/search/?tag=" + encodeURIComponent(tag)) +
           '">' +
           esc(tag) +
           "</a>"
