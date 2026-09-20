@@ -81,8 +81,9 @@
     var cached = readCache(topic);
     if (cached) return Promise.resolve(cached);
 
-    var q = "topic:" + topic;
-    if (catalog.org) q += " org:" + catalog.org;
+    var owner = catalog.org || catalog.owner || "";
+    var q = "topic:" + topic + " fork:true";
+    if (owner) q += " user:" + owner;
     var url =
       "https://api.github.com/search/repositories?q=" +
       encodeURIComponent(q) +
