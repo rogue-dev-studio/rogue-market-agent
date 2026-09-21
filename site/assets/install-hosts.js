@@ -387,14 +387,10 @@
           .join("");
 
         return (
-          '<div class="host-item' +
-          (idx === 0 ? " is-open" : "") +
-          '" data-host-item data-host-id="' +
+          '<div class="host-item" data-host-item data-host-id="' +
           esc(host.id) +
           '">' +
-          '<button type="button" class="host-toggle" data-host-toggle aria-expanded="' +
-          (idx === 0 ? "true" : "false") +
-          '" aria-controls="' +
+          '<button type="button" class="host-toggle" data-host-toggle aria-expanded="false" aria-controls="' +
           panelId +
           '">' +
           host.icon +
@@ -405,9 +401,7 @@
           "</button>" +
           '<div class="host-panel" id="' +
           panelId +
-          '" data-host-panel' +
-          (idx === 0 ? "" : " hidden") +
-          ">" +
+          '" data-host-panel hidden>' +
           body +
           "</div></div>"
         );
