@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-21 12:33:55
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-21 12:33:55
+ * @Last Modified time: 2026-09-21 12:42:00
  */
 (function () {
   function esc(s) {
@@ -13,42 +13,149 @@
       .replace(/"/g, "&quot;");
   }
 
-  function icon(letter, bg) {
+  function logoImg(slug, color, bg) {
+    var hex = String(color || "ffffff").replace(/^#/, "");
     return (
-      '<span class="host-icon" style="--host-icon-bg:' +
-      esc(bg) +
+      '<span class="host-icon host-icon--logo" style="--host-icon-bg:' +
+      esc(bg || "#2a2a2a") +
       '" aria-hidden="true">' +
-      esc(letter) +
+      '<img src="https://cdn.simpleicons.org/' +
+      esc(slug) +
+      "/" +
+      esc(hex) +
+      '" alt="" width="18" height="18" loading="lazy" decoding="async" />' +
       "</span>"
     );
   }
 
+  function logoSvg(path, bg) {
+    return (
+      '<span class="host-icon host-icon--logo" style="--host-icon-bg:' +
+      esc(bg || "#2a2a2a") +
+      '" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">' +
+      path +
+      "</svg></span>"
+    );
+  }
+
+  var I = {
+    telegram: logoImg("telegram", "ffffff", "#229ED9"),
+    slack: logoImg("slack", "ffffff", "#4A154B"),
+    anthropic: logoImg("anthropic", "ffffff", "#D97757"),
+    openai: logoImg("openai", "ffffff", "#10A37F"),
+    github: logoImg("github", "ffffff", "#24292F"),
+    google: logoImg("googlegemini", "ffffff", "#4285F4"),
+    replit: logoImg("replit", "ffffff", "#F26207"),
+    jetbrains: logoImg("jetbrains", "ffffff", "#000000"),
+    cursor: logoSvg(
+      '<path d="M4 4l7.5 16L13 13l7-1.5L4 4zm9.2 9.5L12 18.8l5.8-12.3-4.6 7z"/>',
+      "#111111"
+    ),
+    openclaw: logoSvg(
+      '<path d="M12 2c2.5 3.2 4 6.2 4 9a4 4 0 11-8 0c0-2.8 1.5-5.8 4-9zm-1 14.2V22h2v-5.8a5.5 5.5 0 01-2 0z"/>',
+      "#0F766E"
+    ),
+    amp: logoSvg(
+      '<path d="M12 3l8 14H4L12 3zm0 4.5L7.8 15h8.4L12 7.5z"/>',
+      "#6366F1"
+    ),
+    kilo: logoSvg(
+      '<path d="M6 4h3v7.2L16.2 4H20l-7.1 7.5L20 20h-3.9l-5.1-6.5V20H6V4z"/>',
+      "#7C3AED"
+    ),
+    windsurf: logoSvg(
+      '<path d="M3 17c3.5-1 6-3.2 9-7 3 3.8 5.5 6 9 7-3.2.8-6.2.8-9 .8s-5.8 0-9-.8zm2-5.5c2.2-.7 4.1-2.2 6-4.8 1.9 2.6 3.8 4.1 6 4.8-2 .5-4 .5-6 .5s-4 0-6-.5z"/>',
+      "#0EA5E9"
+    ),
+    cline: logoSvg(
+      '<path d="M5 6h14v2H5V6zm0 5h14v2H5v-2zm0 5h10v2H5v-2z"/>',
+      "#F59E0B"
+    ),
+    continue: logoSvg(
+      '<path d="M8 5v14l11-7L8 5z"/>',
+      "#22C55E"
+    ),
+    opencode: logoSvg(
+      '<path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2zM18 15l4 3-4 3v-6z"/>',
+      "#111827"
+    ),
+    openhands: logoSvg(
+      '<path d="M7 11V8a2 2 0 114 0v2h1V7a2 2 0 114 0v4h1V9a2 2 0 114 0v6a5 5 0 01-5 5H11a5 5 0 01-5-5v-2a2 2 0 114 0v-2H7z"/>',
+      "#2563EB"
+    ),
+    roo: logoSvg(
+      '<path d="M12 3c4.4 0 8 2.9 8 6.5S16.4 16 12 16s-8-2.9-8-6.5S7.6 3 12 3zm-3 15.2c1.7.5 3.5.8 5.4.8 1.2 0 2.4-.1 3.6-.3L19 21l-2.2-1.3c-.9.2-1.8.3-2.8.3-1.8 0-3.5-.3-5-.8L7 21l2-2.8z"/>',
+      "#EA580C"
+    ),
+    augment: logoSvg(
+      '<path d="M12 2l3.2 6.5L22 9.2l-5 4.9 1.2 7L12 17.8 5.8 21l1.2-7-5-4.9 6.8-.7L12 2z"/>',
+      "#8B5CF6"
+    ),
+    goose: logoSvg(
+      '<path d="M8 14c0-4 2.5-7 6-8 1.2 2 1.8 3.8 1.8 5.5 0 1.4-.4 2.6-1.1 3.5H18v2h-4.2A6.5 6.5 0 018 14zm2.2 0a4.4 4.4 0 004.3-3.7c-2.1.8-3.4 2.2-4.3 3.7z"/>',
+      "#CA8A04"
+    ),
+    trae: logoSvg(
+      '<path d="M4 5h16v3h-6v11h-4V8H4V5z"/>',
+      "#06B6D4"
+    ),
+    zencoder: logoSvg(
+      '<path d="M5 5h14v3.2L9.8 16H19V19H5v-3.2L14.2 8H5V5z"/>',
+      "#EC4899"
+    ),
+    antigravity: logoSvg(
+      '<path d="M12 2l2.4 4.8L20 8l-4 3.9.9 5.5L12 15.2 7.1 17.4 8 11.9 4 8l5.6-1.2L12 2zm0 18c-2.2 0-4-.7-4-1.5S9.8 17 12 17s4 .7 4 1.5S14.2 20 12 20z"/>',
+      "#334155"
+    ),
+    download: logoSvg(
+      '<path d="M11 3h2v10h3l-4 5-4-5h3V3zm-6 15h14v3H5v-3z"/>',
+      "#64748B"
+    )
+  };
+
   var HOSTS = [
-    { id: "telegram", label: "Telegram", agent: "telegram", icon: icon("Tg", "#229ED9"), skill: true, mcp: false },
-    { id: "slack", label: "Slack", agent: "slack", icon: icon("Sl", "#4A154B"), skill: true, mcp: false },
-    { id: "claude-code", label: "Claude Code", agent: "claude", icon: icon("CC", "#D97757"), skill: true, mcp: true },
-    { id: "codex", label: "Codex", agent: "codex", icon: icon("Cx", "#1F2937"), skill: true, mcp: true },
-    { id: "openclaw", label: "OpenClaw", agent: "openclaw", icon: icon("Oc", "#0F766E"), skill: true, mcp: true },
-    { id: "cursor", label: "Cursor", agent: "cursor", icon: icon("Cu", "#E47909"), skill: true, mcp: true },
-    { id: "amp", label: "Amp", agent: "amp", icon: icon("Am", "#6366F1"), skill: true, mcp: true },
-    { id: "github-copilot", label: "GitHub Copilot", agent: "copilot", icon: icon("Gh", "#24292F"), skill: true, mcp: true },
-    { id: "gemini-cli", label: "Gemini CLI", agent: "gemini", icon: icon("Ge", "#4285F4"), skill: true, mcp: true },
-    { id: "kilo", label: "Kilo Code", agent: "kilo", icon: icon("Ki", "#7C3AED"), skill: true, mcp: true },
-    { id: "junie", label: "Junie", agent: "junie", icon: icon("Ju", "#DB2777"), skill: true, mcp: false },
-    { id: "replit", label: "Replit", agent: "replit", icon: icon("Re", "#F26207"), skill: true, mcp: true },
-    { id: "windsurf", label: "Windsurf", agent: "windsurf", icon: icon("Ws", "#0EA5E9"), skill: true, mcp: true },
-    { id: "cline", label: "Cline", agent: "cline", icon: icon("Cl", "#F59E0B"), skill: true, mcp: true },
-    { id: "continue", label: "Continue", agent: "continue", icon: icon("Co", "#22C55E"), skill: true, mcp: true },
-    { id: "opencode", label: "OpenCode", agent: "opencode", icon: icon("Op", "#111827"), skill: true, mcp: true },
-    { id: "openhands", label: "OpenHands", agent: "openhands", icon: icon("Oh", "#2563EB"), skill: true, mcp: true },
-    { id: "roo", label: "Roo Code", agent: "roo", icon: icon("Ro", "#EA580C"), skill: true, mcp: true },
-    { id: "augment", label: "Augment", agent: "augment", icon: icon("Au", "#8B5CF6"), skill: true, mcp: true },
-    { id: "goose", label: "Goose", agent: "goose", icon: icon("Go", "#CA8A04"), skill: true, mcp: true },
-    { id: "trae", label: "Trae", agent: "trae", icon: icon("Tr", "#06B6D4"), skill: true, mcp: true },
-    { id: "zencoder", label: "Zencoder", agent: "zencoder", icon: icon("Ze", "#EC4899"), skill: true, mcp: true },
-    { id: "antigravity", label: "Antigravity", agent: "antigravity", icon: icon("Ag", "#334155"), skill: true, mcp: true },
-    { id: "download", label: "Download skill", agent: null, icon: icon("Dl", "#64748B"), skill: true, mcp: false, download: true }
+    { id: "telegram", label: "Telegram", agent: "telegram", icon: I.telegram, skill: true, mcp: false },
+    { id: "slack", label: "Slack", agent: "slack", icon: I.slack, skill: true, mcp: false },
+    { id: "claude-code", label: "Claude Code", agent: "claude", icon: I.anthropic, skill: true, mcp: true },
+    { id: "codex", label: "Codex", agent: "codex", icon: I.openai, skill: true, mcp: true },
+    { id: "openclaw", label: "OpenClaw", agent: "openclaw", icon: I.openclaw, skill: true, mcp: true },
+    { id: "cursor", label: "Cursor", agent: "cursor", icon: I.cursor, skill: true, mcp: true },
+    { id: "amp", label: "Amp", agent: "amp", icon: I.amp, skill: true, mcp: true },
+    { id: "github-copilot", label: "GitHub Copilot", agent: "copilot", icon: I.github, skill: true, mcp: true },
+    { id: "gemini-cli", label: "Gemini CLI", agent: "gemini", icon: I.google, skill: true, mcp: true },
+    { id: "kilo", label: "Kilo Code", agent: "kilo", icon: I.kilo, skill: true, mcp: true },
+    { id: "junie", label: "Junie", agent: "junie", icon: I.jetbrains, skill: true, mcp: false },
+    { id: "replit", label: "Replit", agent: "replit", icon: I.replit, skill: true, mcp: true },
+    { id: "windsurf", label: "Windsurf", agent: "windsurf", icon: I.windsurf, skill: true, mcp: true },
+    { id: "cline", label: "Cline", agent: "cline", icon: I.cline, skill: true, mcp: true },
+    { id: "continue", label: "Continue", agent: "continue", icon: I.continue, skill: true, mcp: true },
+    { id: "opencode", label: "OpenCode", agent: "opencode", icon: I.opencode, skill: true, mcp: true },
+    { id: "openhands", label: "OpenHands", agent: "openhands", icon: I.openhands, skill: true, mcp: true },
+    { id: "roo", label: "Roo Code", agent: "roo", icon: I.roo, skill: true, mcp: true },
+    { id: "augment", label: "Augment", agent: "augment", icon: I.augment, skill: true, mcp: true },
+    { id: "goose", label: "Goose", agent: "goose", icon: I.goose, skill: true, mcp: true },
+    { id: "trae", label: "Trae", agent: "trae", icon: I.trae, skill: true, mcp: true },
+    { id: "zencoder", label: "Zencoder", agent: "zencoder", icon: I.zencoder, skill: true, mcp: true },
+    { id: "antigravity", label: "Antigravity", agent: "antigravity", icon: I.antigravity, skill: true, mcp: true },
+    {
+      id: "download",
+      labelSkill: "Download skill",
+      labelMcp: "Download MCP",
+      agent: null,
+      icon: I.download,
+      skill: true,
+      mcp: true,
+      download: true
+    }
   ];
+
+  function hostLabel(host, kind) {
+    if (host.download) {
+      return kind === "skills" ? host.labelSkill || "Download skill" : host.labelMcp || "Download MCP";
+    }
+    return host.label;
+  }
 
   function skillCommand(skillUrl, agent) {
     return "npx -y skills add " + skillUrl + " --agent " + agent;
@@ -80,14 +187,41 @@
     return JSON.stringify(obj, null, 2);
   }
 
-  function mcpCommands(host, mcpJson, githubUrl) {
+  function mcpCommands(host, mcpJson, githubUrl, downloadUrl) {
+    if (host.download) {
+      return [
+        {
+          title: "Download MCP:",
+          body: downloadUrl || githubUrl,
+          note: "Download the repository archive, then follow the README to run or configure the server.",
+          href: downloadUrl || githubUrl
+        }
+      ];
+    }
+
     var pretty = typeof mcpJson === "string" ? mcpJson : prettyJson(mcpJson);
     var info = mcpServerEntry(mcpJson);
     var key = info ? info.key : "server";
     var entry = info ? info.entry : null;
     var blocks = [];
 
-    if (host.id === "cursor" || host.id === "windsurf" || host.id === "cline" || host.id === "continue" || host.id === "amp" || host.id === "augment" || host.id === "trae" || host.id === "zencoder" || host.id === "antigravity" || host.id === "kilo" || host.id === "roo" || host.id === "goose" || host.id === "openhands" || host.id === "replit" || host.id === "github-copilot") {
+    if (
+      host.id === "cursor" ||
+      host.id === "windsurf" ||
+      host.id === "cline" ||
+      host.id === "continue" ||
+      host.id === "amp" ||
+      host.id === "augment" ||
+      host.id === "trae" ||
+      host.id === "zencoder" ||
+      host.id === "antigravity" ||
+      host.id === "kilo" ||
+      host.id === "roo" ||
+      host.id === "goose" ||
+      host.id === "openhands" ||
+      host.id === "replit" ||
+      host.id === "github-copilot"
+    ) {
       blocks.push({
         title: "Install to " + host.label + ":",
         body: pretty,
@@ -99,9 +233,12 @@
     if (host.id === "claude-code" && entry) {
       var args = Array.isArray(entry.args) ? entry.args : [];
       var cmd = entry.command || "uvx";
-      var joined = [cmd].concat(args).map(function (a) {
-        return /\s/.test(String(a)) ? JSON.stringify(String(a)) : String(a);
-      }).join(" ");
+      var joined = [cmd]
+        .concat(args)
+        .map(function (a) {
+          return /\s/.test(String(a)) ? JSON.stringify(String(a)) : String(a);
+        })
+        .join(" ");
       blocks.push({
         title: "Install to Claude Code:",
         body: "claude mcp add " + key + " -- " + joined,
@@ -123,7 +260,8 @@
       if (githubUrl) {
         blocks.push({
           title: "Repository:",
-          body: githubUrl
+          body: githubUrl,
+          href: githubUrl
         });
       }
       return blocks;
@@ -143,7 +281,8 @@
         {
           title: "Download skill:",
           body: downloadUrl || skillUrl,
-          note: "Download or open the skill source, then place it in your host skills folder."
+          note: "Download or open the skill source, then place it in your host skills folder.",
+          href: downloadUrl || skillUrl
         }
       ];
     }
@@ -216,9 +355,10 @@
     var downloadUrl = options.downloadUrl || skillUrl;
     var mcpJson = options.mcpJson || "";
     var githubUrl = options.githubUrl || "";
-    var requirements = options.requirements && options.requirements.length
-      ? options.requirements
-      : defaultRequirements(kind);
+    var requirements =
+      options.requirements && options.requirements.length
+        ? options.requirements
+        : defaultRequirements(kind);
 
     var hosts = HOSTS.filter(function (h) {
       return kind === "skills" ? h.skill : h.mcp;
@@ -237,23 +377,31 @@
 
     var listHtml = hosts
       .map(function (host, idx) {
+        var label = hostLabel(host, kind);
         var blocks =
           kind === "skills"
             ? skillBlocks(host, skillUrl, downloadUrl)
-            : mcpCommands(host, mcpJson, githubUrl);
-        var panelId = "host-panel-" + host.id;
+            : mcpCommands(host, mcpJson, githubUrl, downloadUrl);
+        var panelId = "host-panel-" + host.id + "-" + kind;
         var body = blocks
           .map(function (block) {
+            var actions =
+              '<button type="button" class="copy-btn" data-copy-install>Copy</button>' +
+              (block.href
+                ? '<a class="copy-btn host-download-btn" href="' +
+                  esc(block.href) +
+                  '" rel="noopener" target="_blank">Open</a>'
+                : "");
             return (
               '<div class="host-install-block">' +
-              "<p class=\"host-install-title\">" +
+              '<p class="host-install-title">' +
               esc(block.title) +
               "</p>" +
               '<div class="install-row">' +
               "<code>" +
               esc(block.body) +
               "</code>" +
-              '<button type="button" class="copy-btn" data-copy-install>Copy</button>' +
+              actions +
               "</div>" +
               (block.note ? '<p class="host-install-note">' + esc(block.note) + "</p>" : "") +
               "</div>"
@@ -274,7 +422,7 @@
           '">' +
           host.icon +
           '<span class="host-label">' +
-          esc(host.label) +
+          esc(label) +
           "</span>" +
           '<span class="host-chevron" aria-hidden="true"></span>' +
           "</button>" +

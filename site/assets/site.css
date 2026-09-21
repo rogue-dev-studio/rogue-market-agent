@@ -3074,6 +3074,28 @@ a.pill-link:focus-visible {
   letter-spacing: 0.02em;
 }
 
+.host-icon--logo {
+  overflow: hidden;
+}
+
+.host-icon--logo img,
+.host-icon--logo svg {
+  display: block;
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.host-icon--logo svg {
+  color: #fff;
+}
+
+.host-download-btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .host-label {
   flex: 1 1 auto;
 }
