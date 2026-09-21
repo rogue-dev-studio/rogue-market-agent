@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:26:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-21 13:45:00
+ * @Last Modified time: 2026-09-21 15:30:00
  */
 (function () {
   var catalog = window.RogueCatalog;
@@ -40,7 +40,7 @@
   };
 
   function cacheKey(topic) {
-    return "rm-topic-v5:" + topic;
+    return "rm-topic-v6:" + topic;
   }
 
   function readCache(topic) {
@@ -154,7 +154,7 @@
     var url =
       "https://api.github.com/search/repositories?q=" +
       encodeURIComponent(q) +
-      "&sort=stars&order=desc&per_page=50";
+      "&sort=stars&order=desc&per_page=100";
 
     return fetch(url, {
       headers: {
