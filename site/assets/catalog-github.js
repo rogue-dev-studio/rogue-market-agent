@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:26:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-20 12:26:00
+ * @Last Modified time: 2026-09-21 13:45:00
  */
 (function () {
   var catalog = window.RogueCatalog;
@@ -11,11 +11,36 @@
   var CACHE_MS = 30 * 60 * 1000;
   var TOPIC_META = {
     "rogue-market-skills": 1,
-    "rogue-market-mcp": 1
+    "rogue-market-mcp": 1,
+    "rogue-development": 1
+  };
+  var CATEGORY_ALIASES = {
+    "design-tools": "Design Tools",
+    "developer-tools": "Developer Tools",
+    "browser-automation": "Browser Automation",
+    "social-media-management": "Social Media Management",
+    "collaboration-tools": "Collaboration Tools",
+    "productivity-workflow": "Productivity & Workflow",
+    "productivity-and-workflow": "Productivity & Workflow",
+    "data-science-ml": "Data Science & ML",
+    "data-science-and-ml": "Data Science & ML",
+    "api-development": "API Development",
+    "analytics-monitoring": "Analytics & Monitoring",
+    "security-testing": "Security & Testing",
+    "web-scraping-data-collection": "Web Scraping & Data Collection",
+    "deployment-devops": "Deployment & DevOps",
+    "learning-documentation": "Learning & Documentation",
+    "database-management": "Database Management",
+    "content-management": "Content Management",
+    "cloud-infrastructure": "Cloud Infrastructure",
+    "marketing-automation": "Marketing Automation",
+    "e-commerce-solutions": "E-commerce Solutions",
+    "game-development": "Game Development",
+    "mobile-development": "Mobile Development"
   };
 
   function cacheKey(topic) {
-    return "rm-topic-v4:" + topic;
+    return "rm-topic-v5:" + topic;
   }
 
   function readCache(topic) {
@@ -39,19 +64,55 @@
 
   function pickCategory(topics) {
     var known = catalog.categories || [];
-    for (var i = 0; i < topics.length; i++) {
-      var t = String(topics[i] || "");
-      var normalized = t.replace(/-/g, " ").toLowerCase();
+    var i;
+    for (i = 0; i < topics.length; i++) {
+      var slug = String(topics[i] || "").toLowerCase();
+      if (CATEGORY_ALIASES[slug]) return CATEGORY_ALIASES[slug];
+    }
+    for (i = 0; i < topics.length; i++) {
+      var normalized = String(topics[i] || "")
+        .replace(/-/g, " ")
+        .replace(/&/g, "and")
+        .toLowerCase();
       for (var j = 0; j < known.length; j++) {
-        if (known[j].toLowerCase() === normalized) {
-          return known[j];
-        }
+        var knownNorm = known[j]
+          .toLowerCase()
+          .replace(/&/g, "and")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (knownNorm === normalized) return known[j];
       }
     }
-    if (topics.indexOf("design-tools") !== -1 || topics.indexOf("blender") !== -1) {
+    if (
+      topics.indexOf("blender") !== -1 ||
+      topics.indexOf("illustrator") !== -1 ||
+      topics.indexOf("photoshop") !== -1 ||
+      topics.indexOf("3d") !== -1 ||
+      topics.indexOf("sculpting") !== -1
+    ) {
       return "Design Tools";
     }
-    if (topics.indexOf("mcp-server") !== -1) return "Developer Tools";
+    if (
+      topics.indexOf("playwright") !== -1 ||
+      topics.indexOf("chrome-devtools") !== -1 ||
+      topics.indexOf("cdp") !== -1
+    ) {
+      return "Browser Automation";
+    }
+    if (topics.indexOf("youtube") !== -1 || topics.indexOf("publishing") !== -1) {
+      return "Social Media Management";
+    }
+    if (
+      topics.indexOf("atlassian") !== -1 ||
+      topics.indexOf("jira") !== -1 ||
+      topics.indexOf("linear") !== -1 ||
+      topics.indexOf("confluence") !== -1
+    ) {
+      return "Collaboration Tools";
+    }
+    if (topics.indexOf("mcp-server") !== -1 || topics.indexOf("mcp") !== -1) {
+      return "Developer Tools";
+    }
     return "Other";
   }
 
