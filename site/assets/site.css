@@ -2561,6 +2561,58 @@ a.pill-link:focus-visible {
   color: var(--link);
 }
 
+.share-anchor {
+  position: relative;
+}
+
+.share-menu {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  z-index: 70;
+  min-width: 11.5rem;
+  padding: 0.35rem;
+  background: #2e2e2e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.55rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.share-menu[hidden] {
+  display: none;
+}
+
+.share-menu-item {
+  appearance: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: transparent;
+  color: #f0f0f0;
+  text-decoration: none;
+  font-family: var(--body);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+
+.share-menu-item:hover,
+.share-menu-item:focus-visible {
+  background: rgba(228, 121, 9, 0.14);
+  color: var(--link);
+  outline: none;
+}
+
+.share-menu-item svg {
+  flex: 0 0 auto;
+  color: inherit;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
