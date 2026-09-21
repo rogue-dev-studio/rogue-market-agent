@@ -103,12 +103,13 @@
   function fetchInstallConfig(owner, name, item, full) {
     if (kind === "skills") {
       return Promise.resolve({
-        label: "Install (Cursor)",
+        label: "Install",
         body: "npx -y skills add https://github.com/" + full + " --agent cursor",
-        tips: [
-          "Make sure Node.js is on your PATH",
-          "Change <code>--agent</code> for your host when supported (e.g. <code>claude</code>, <code>opencode</code>)",
-          "Start a new chat after install so the skill loads"
+        tips: [],
+        requirements: [
+          "Node.js 18+ with <code>npx</code> on PATH",
+          "An agent host that supports the skills CLI",
+          "Fresh chat/session after install so the skill loads"
         ]
       });
     }
@@ -132,13 +133,14 @@
         body = JSON.stringify(cfg, null, 2);
       }
       return {
-        label: "Cursor MCP config",
+        label: "MCP config",
         body: body,
-        tips: [
-          "Merge this JSON into your Cursor MCP settings, then restart Cursor",
-          "Install <code>uv</code> so <code>uvx</code> is on your PATH",
-          "Open the GitHub README for host-specific setup (addon, extension, or daemon)",
-          "Confirm the MCP server appears in your host tool list"
+        tips: [],
+        requirements: [
+          "An MCP-capable agent host",
+          "<code>uv</code> / <code>uvx</code> on PATH (when the config uses uvx)",
+          "Any desktop app / extension required by the server (see README)",
+          "Restart the host after saving MCP config"
         ]
       };
     });
@@ -324,22 +326,36 @@
     if (installIntro) {
       installIntro.textContent =
         kind === "skills"
-          ? "Install the skill on your preferred agent host with the command below."
-          : "Add this configuration to your agent host, then restart the host.";
+          ? "Pick a host below to expand install instructions."
+          : "Pick a host below to expand MCP install instructions.";
     }
 
-    var label = document.querySelector("[data-install-label]");
-    if (label) label.textContent = install.label;
-
-    setText("[data-install-cmd]", install.body);
-
-    var tipList = document.querySelector("[data-install-tips]");
-    if (tipList) {
-      tipList.innerHTML = (install.tips || [])
-        .map(function (tip) {
-          return "<li>" + tip + "</li>";
-        })
-        .join("");
+    var hostMount = document.querySelector("[data-install-hosts]");
+    if (hostMount && window.RogueInstallHosts) {
+      var skillUrl = github;
+      if (kind === "skills") {
+        skillUrl = "https://github.com/" + full;
+      }
+      RogueInstallHosts.render(hostMount, {
+        kind: kind,
+        skillUrl: skillUrl,
+        downloadUrl: "https://github.com/" + full + "/archive/refs/heads/main.zip",
+        mcpJson: install.body,
+        githubUrl: github,
+        requirements: install.requirements || null
+      });
+    } else {
+      var label = document.querySelector("[data-install-label]");
+      if (label) label.textContent = install.label;
+      setText("[data-install-cmd]", install.body);
+      var tipList = document.querySelector("[data-install-tips]");
+      if (tipList) {
+        tipList.innerHTML = (install.tips || [])
+          .map(function (tip) {
+            return "<li>" + tip + "</li>";
+          })
+          .join("");
+      }
     }
 
     var loading = document.querySelector("[data-detail-loading]");

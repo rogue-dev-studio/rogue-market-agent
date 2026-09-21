@@ -147,28 +147,11 @@
 
         <article class="detail-panel" data-panel="installation" role="tabpanel" hidden>
           <h2>Installation</h2>
-          <p>Add the MCP config below to your agent host, then restart the host.</p>
-          <div class="install" aria-label="MCP config">
-            <p class="install-label">Cursor MCP config</p>
-            <div class="install-row">
-              <code id="install-cmd">{
-{
-  "mcpServers": {
-    "illustrator": {
-      "command": "npx",
-      "args": ["-y", "illustrator-mcp-server"]
-    }
-  }
-}</code>
-              <button type="button" class="copy-btn" id="copy-btn">Copy</button>
-            </div>
-          </div>
-          <h3>After install</h3>
-          <ul>
-            <li>Open Adobe Illustrator</li>
-            <li>Confirm the MCP server appears in the host</li>
-            <li>Ask the agent to read or export the active document</li>
-          </ul>
+          <p>Pick a host below to expand MCP install instructions.</p>
+          <div data-install-hosts
+            data-kind="servers"
+            data-github-url="https://github.com/rogue-dev-studio/ai-agents-rogue"
+            data-mcp-json='{"mcpServers":{"illustrator":{"command":"npx","args":["-y","illustrator-mcp-server"]}}}'></div>
         </article>
       </div>
     </section>
@@ -179,17 +162,27 @@
   <script src="../../assets/detail-tabs.js" defer></script>
   <script src="../../assets/detail-share.js" defer></script>
   <script src="../../assets/github-stars.js" defer></script>
+  <script src="../../assets/install-hosts.js"></script>
   <script>
     (function () {
-      var cmd = document.getElementById("install-cmd");
-      var btn = document.getElementById("copy-btn");
       var md = document.getElementById("readme-md");
-      if (btn && cmd) {
-        btn.addEventListener("click", function () {
-          navigator.clipboard.writeText(cmd.textContent.trim()).then(function () {
-            btn.textContent = "Copied";
-            setTimeout(function () { btn.textContent = "Copy"; }, 1400);
-          });
+      var mount = document.querySelector("[data-install-hosts]");
+      if (mount && window.RogueInstallHosts) {
+        var raw = mount.getAttribute("data-mcp-json") || "{}";
+        var mcpJson = raw;
+        try {
+          mcpJson = JSON.stringify(JSON.parse(raw), null, 2);
+        } catch (err) {}
+        RogueInstallHosts.render(mount, {
+          kind: mount.getAttribute("data-kind") || "servers",
+          mcpJson: mcpJson,
+          githubUrl: mount.getAttribute("data-github-url") || "",
+          requirements: [
+            "Adobe Illustrator desktop installed (ideally running)",
+            "Node.js 18+ for <code>npx</code>",
+            "An MCP-capable agent host",
+            "Restart the host after saving MCP config"
+          ]
         });
       }
       if (md) {

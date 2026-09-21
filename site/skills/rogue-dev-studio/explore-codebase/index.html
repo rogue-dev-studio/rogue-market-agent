@@ -142,20 +142,11 @@
 
         <article class="detail-panel" data-panel="installation" role="tabpanel" hidden>
           <h2>Installation</h2>
-          <p>Install the skill on your preferred agent host with the command below.</p>
-          <div class="install" aria-label="Install command">
-            <p class="install-label">Install (Cursor)</p>
-            <div class="install-row">
-              <code id="install-cmd">npx -y skills add https://rogue-dev-studio.github.io/rogue-market-agent/skills/rogue-dev-studio/explore-codebase --agent cursor</code>
-              <button type="button" class="copy-btn" id="copy-btn">Copy</button>
-            </div>
-          </div>
-          <h3>Tips</h3>
-          <ul>
-            <li>Make sure Node.js is available on your PATH</li>
-            <li>Change <code>--agent</code> for your host (e.g. <code>claude</code> or <code>opencode</code>) when supported</li>
-            <li>After install, start a new chat so the skill loads</li>
-          </ul>
+          <p>Pick a host below to expand install instructions.</p>
+          <div data-install-hosts
+            data-kind="skills"
+            data-skill-url="https://rogue-dev-studio.github.io/rogue-market-agent/skills/rogue-dev-studio/explore-codebase"
+            data-download-url="https://github.com/rogue-dev-studio/ai-agents-rogue/archive/refs/heads/main.zip"></div>
         </article>
       </div>
     </section>
@@ -166,17 +157,16 @@
   <script src="../../../assets/detail-tabs.js" defer></script>
   <script src="../../../assets/detail-share.js" defer></script>
   <script src="../../../assets/github-stars.js" defer></script>
+  <script src="../../../assets/install-hosts.js"></script>
   <script>
     (function () {
-      var cmd = document.getElementById("install-cmd");
-      var btn = document.getElementById("copy-btn");
       var md = document.getElementById("skill-md");
-      if (btn && cmd) {
-        btn.addEventListener("click", function () {
-          navigator.clipboard.writeText(cmd.textContent.trim()).then(function () {
-            btn.textContent = "Copied";
-            setTimeout(function () { btn.textContent = "Copy"; }, 1400);
-          });
+      var mount = document.querySelector("[data-install-hosts]");
+      if (mount && window.RogueInstallHosts) {
+        RogueInstallHosts.render(mount, {
+          kind: mount.getAttribute("data-kind") || "skills",
+          skillUrl: mount.getAttribute("data-skill-url"),
+          downloadUrl: mount.getAttribute("data-download-url")
         });
       }
       if (md) {
