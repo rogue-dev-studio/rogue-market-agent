@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:26:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-21 15:30:00
+ * @Last Modified time: 2026-09-21 15:35:00
  */
 (function () {
   var catalog = window.RogueCatalog;
@@ -40,7 +40,7 @@
   };
 
   function cacheKey(topic) {
-    return "rm-topic-v6:" + topic;
+    return "rm-topic-v7:" + topic;
   }
 
   function readCache(topic) {
@@ -144,29 +144,54 @@
     };
   }
 
-  function searchTopic(topic) {
-    var cached = readCache(topic);
-    if (cached) return Promise.resolve(cached);
+  function linkHasNext(linkHeader) {
+    return Boolean(linkHeader && /rel="next"/i.test(linkHeader));
+  }
 
+  function searchTopicPage(topic, page) {
     var owner = catalog.org || catalog.owner || "";
     var q = "topic:" + topic + " fork:true";
     if (owner) q += " user:" + owner;
     var url =
       "https://api.github.com/search/repositories?q=" +
       encodeURIComponent(q) +
-      "&sort=stars&order=desc&per_page=100";
+      "&sort=stars&order=desc&per_page=100&page=" +
+      page;
 
     return fetch(url, {
       headers: {
         Accept: "application/vnd.github+json"
       }
-    })
-      .then(function (res) {
-        if (!res.ok) throw new Error("GitHub search " + res.status);
-        return res.json();
-      })
-      .then(function (data) {
-        var items = Array.isArray(data.items) ? data.items : [];
+    }).then(function (res) {
+      if (!res.ok) throw new Error("GitHub search " + res.status);
+      var hasNext = linkHasNext(res.headers.get("Link"));
+      return res.json().then(function (data) {
+        return {
+          items: Array.isArray(data.items) ? data.items : [],
+          hasNext: hasNext,
+          totalCount: typeof data.total_count === "number" ? data.total_count : 0
+        };
+      });
+    });
+  }
+
+  function searchTopic(topic) {
+    var cached = readCache(topic);
+    if (cached) return Promise.resolve(cached);
+
+    function loadPages(page, acc) {
+      return searchTopicPage(topic, page).then(function (part) {
+        var merged = acc.concat(part.items);
+        // GitHub search hard-caps at 1000 results; stop when page is short or no next link
+        if (part.hasNext && part.items.length > 0 && merged.length < 1000 && page < 10) {
+          return loadPages(page + 1, merged);
+        }
+        return merged;
+      });
+    }
+
+    return loadPages(1, [])
+      .then(function (items) {
         writeCache(topic, items);
         return items;
       })
