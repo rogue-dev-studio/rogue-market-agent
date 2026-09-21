@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-21 12:33:55
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-21 12:50:00
+ * @Last Modified time: 2026-09-21 13:35:00
  */
 (function () {
   function esc(s) {
@@ -13,17 +13,23 @@
       .replace(/"/g, "&quot;");
   }
 
-  /* Brand icons: Lobe Icons (AI hosts) + Simple Icons (Telegram/Slack) */
+  /* Brand icons: Lobe Icons (AI hosts) + Simple Icons / inline SVG */
   var LOBE = "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@1.86.0/icons/";
   var SIMPLE = "https://cdn.simpleicons.org/";
+  var TILE = "#F3F4F6";
+  /* Slack removed from current Simple Icons (Salesforce); pin v13 + invert on brand tile */
+  var SLACK_CDN = "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/slack.svg";
 
-  function logoWrap(src, bg, fallbackSrc) {
+  function logoWrap(src, bg, fallbackSrc, opts) {
+    var invert = opts && opts.invert;
     var fb = fallbackSrc
       ? ' onerror="this.onerror=null;this.src=\'' + esc(fallbackSrc) + '\'"'
       : "";
     return (
-      '<span class="host-icon host-icon--logo" style="--host-icon-bg:' +
-      esc(bg || "#2a2a2a") +
+      '<span class="host-icon host-icon--logo' +
+      (invert ? " host-icon--invert" : "") +
+      '" style="--host-icon-bg:' +
+      esc(bg || TILE) +
       '" aria-hidden="true">' +
       '<img src="' +
       esc(src) +
@@ -33,21 +39,25 @@
     );
   }
 
-  function lobe(name, bg, preferColor) {
+  function lobe(name, preferColor) {
+    /* Color glyphs keep brand hues on a light tile. Mono SVGs use currentColor
+       (renders black in <img>), so always use a light tile — never a dark brand bg. */
     var primary = preferColor ? name + "-color" : name;
     var fallback = preferColor ? name : name + "-color";
-    return logoWrap(LOBE + primary + ".svg", bg, LOBE + fallback + ".svg");
+    return logoWrap(LOBE + primary + ".svg", TILE, LOBE + fallback + ".svg");
   }
 
-  function simple(slug, color, bg) {
+  function simple(slug, color, bg, invert) {
     var hex = String(color || "ffffff").replace(/^#/, "");
-    return logoWrap(SIMPLE + slug + "/" + hex, bg || "#2a2a2a");
+    return logoWrap(SIMPLE + slug + "/" + hex, bg || "#2a2a2a", null, { invert: !!invert });
   }
 
-  function logoSvg(path, bg) {
+  function logoSvg(path, bg, fg) {
     return (
       '<span class="host-icon host-icon--logo" style="--host-icon-bg:' +
-      esc(bg || "#2a2a2a") +
+      esc(bg || TILE) +
+      ";--host-icon-fg:" +
+      esc(fg || "#111") +
       '" aria-hidden="true">' +
       '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">' +
       path +
@@ -57,37 +67,40 @@
 
   var I = {
     telegram: simple("telegram", "ffffff", "#229ED9"),
-    slack: simple("slack", "ffffff", "#4A154B"),
-    claude: lobe("claudecode", "#D97757", true),
-    codex: lobe("codex", "#10A37F", true),
-    openclaw: lobe("openclaw", "#0F766E", true),
-    cursor: lobe("cursor", "#111111", false),
-    amp: lobe("amp", "#6366F1", false),
-    github: lobe("githubcopilot", "#24292F", false),
-    gemini: lobe("geminicli", "#4285F4", true),
-    kilo: lobe("kilocode", "#7C3AED", false),
-    junie: lobe("junie", "#000000", true),
-    replit: lobe("replit", "#F26207", true),
-    windsurf: lobe("windsurf", "#0EA5E9", false),
-    cline: lobe("cline", "#F59E0B", false),
+    slack: logoWrap(SLACK_CDN, "#4A154B", null, { invert: true }),
+    claude: lobe("claudecode", true),
+    codex: lobe("codex", true),
+    openclaw: lobe("openclaw", true),
+    cursor: lobe("cursor", false),
+    amp: lobe("amp", true),
+    github: lobe("githubcopilot", false),
+    gemini: lobe("geminicli", true),
+    kilo: lobe("kilocode", false),
+    junie: lobe("junie", true),
+    replit: lobe("replit", true),
+    windsurf: lobe("windsurf", false),
+    cline: lobe("cline", false),
     continue: logoSvg(
-      '<path d="M8 5v14l11-7L8 5z"/>',
-      "#14532D"
+      '<path d="M12 2C6.48 2 2 6.2 2 11.4c0 2.9 1.4 5.5 3.6 7.2V22l3.3-1.8c1 .3 2 .4 3.1.4 5.52 0 10-4.2 10-9.4S17.52 2 12 2zm1.1 12.6h-2.2v-2.2h2.2v2.2zm0-3.6h-2.2V6.8h2.2v4.2z"/>',
+      "#1F7A4D",
+      "#fff"
     ),
-    opencode: lobe("opencode", "#111827", false),
-    openhands: lobe("openhands", "#2563EB", true),
-    roo: lobe("roocode", "#EA580C", false),
+    opencode: lobe("opencode", false),
+    openhands: lobe("openhands", true),
+    roo: lobe("roocode", false),
     augment: logoSvg(
       '<path d="M12 2l3.2 6.5L22 9.2l-5 4.9 1.2 7L12 17.8 5.8 21l1.2-7-5-4.9 6.8-.7L12 2z"/>',
-      "#4C1D95"
+      "#4C1D95",
+      "#fff"
     ),
-    goose: lobe("goose", "#CA8A04", false),
-    trae: lobe("trae", "#06B6D4", true),
-    zencoder: lobe("zencoder", "#EC4899", true),
-    antigravity: lobe("antigravity", "#334155", true),
+    goose: lobe("goose", false),
+    trae: lobe("trae", true),
+    zencoder: lobe("zencoder", true),
+    antigravity: lobe("antigravity", true),
     download: logoSvg(
       '<path d="M11 3h2v10h3l-4 5-4-5h3V3zm-6 15h14v3H5v-3z"/>',
-      "#64748B"
+      "#64748B",
+      "#fff"
     )
   };
 

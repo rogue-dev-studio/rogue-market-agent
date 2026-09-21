@@ -3128,7 +3128,7 @@ a.pill-link:focus-visible {
 
 .host-icon--logo {
   overflow: hidden;
-  background: #f5f5f5;
+  background: var(--host-icon-bg, #f3f4f6);
 }
 
 .host-icon--logo img,
@@ -3139,7 +3139,11 @@ a.pill-link:focus-visible {
 }
 
 .host-icon--logo svg {
-  color: #111;
+  color: var(--host-icon-fg, #111);
+}
+
+.host-icon--invert img {
+  filter: brightness(0) invert(1);
 }
 
 .host-download-btn {
