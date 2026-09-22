@@ -38,6 +38,8 @@ window.RogueCatalog = {
   tags: [],
   servers: [],
   skills: [],
+  products: [],
   loaded: false,
+  productsLoaded: false,
   source: "github-topics"
 };

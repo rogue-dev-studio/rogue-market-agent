@@ -18,11 +18,13 @@ Skill / MCP listings stay **empty until** a public repo under `rogue-dev-studio`
 
 Add the matching topic on a public `rogue-dev-studio` repo; the site picks it up via the GitHub topics API.
 
+**Digital products** are static entries in `site/assets/catalog-products.js` (same browse UX as skills/MCP, plus price pills and min/max price filters). Checkout stays on Gumroad.
+
 ## Commerce (Gumroad)
 
 Paid digital downloads use Gumroad; Market stays discovery. See [`commerce/`](commerce/).
 
-Pilot: [Night Drive — Car Near Mountains](https://roguedevstudio.gumroad.com/l/hppwla)
+Pilot: [Night Drive — Car Near Mountains](https://roguedevstudio.gumroad.com/l/hppwla) (`$0+` PWYW on Market)
 
 ## Structure
 
@@ -32,8 +34,8 @@ site/
   assets/
   servers/   ← All / Search / Categories / Tags / Top
   skills/    ← All / Search / Categories / Tags / Top
+  products/  ← All / Search / Categories / Tags / Top / Detail
 ```
-
 ## Local preview
 
 Serve over HTTP (not `file://`) so Share and the GitHub API work:

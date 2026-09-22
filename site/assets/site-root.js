@@ -26,6 +26,11 @@
 
   function detailPath(kind, item) {
     var root = resolveSiteRoot();
+    if (kind === "products") {
+      var id = (item && (item.id || item.slug)) || "";
+      if (id) return root + "products/detail/?id=" + encodeURIComponent(id);
+      return root + "products/";
+    }
     var repo = (item && (item.githubRepo || item.full_name)) || "";
     if (!repo && item && item.owner && item.name) {
       repo = item.owner + "/" + item.name;

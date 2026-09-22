@@ -13,16 +13,17 @@
   var filterStyle = root.getAttribute("data-filter-style") || mode;
   var pageSize = RogueCatalog.pageSize || 12;
   var items = [];
-  var label = kind === "skills" ? "skills" : "MCP servers";
+  var label =
+    kind === "skills" ? "skills" : kind === "products" ? "products" : "MCP servers";
 
   function siteRoot() {
     return (window.RogueSite && RogueSite.root && RogueSite.root()) || "/";
   }
 
   function syncItems() {
-    items = kind === "skills"
-      ? (RogueCatalog.skills || []).slice()
-      : (RogueCatalog.servers || []).slice();
+    if (kind === "skills") items = (RogueCatalog.skills || []).slice();
+    else if (kind === "products") items = (RogueCatalog.products || []).slice();
+    else items = (RogueCatalog.servers || []).slice();
   }
 
   syncItems();
@@ -32,8 +33,12 @@
     query: (params.get("q") || "").trim(),
     category: (params.get("category") || "").trim(),
     tag: (params.get("tag") || "").trim(),
-    range: (params.get("range") || "all-time").trim() === "new" ? "new" : "all-time"
+    range: (params.get("range") || "all-time").trim() === "new" ? "new" : "all-time",
+    minPrice: params.has("minPrice") ? parseFloat(params.get("minPrice")) : null,
+    maxPrice: params.has("maxPrice") ? parseFloat(params.get("maxPrice")) : null
   };
+  if (state.minPrice != null && isNaN(state.minPrice)) state.minPrice = null;
+  if (state.maxPrice != null && isNaN(state.maxPrice)) state.maxPrice = null;
 
   function itemHref(item) {
     if (window.RogueSite && RogueSite.detailPath) {
@@ -51,10 +56,41 @@
   }
 
   function emptyMessage() {
-    var hasFilter = !!(state.query || state.category || state.tag);
+    var hasFilter = !!(
+      state.query ||
+      state.category ||
+      state.tag ||
+      state.minPrice != null ||
+      state.maxPrice != null
+    );
     if (hasFilter) return "No results found.";
+    if (kind === "products") {
+      if (!RogueCatalog.productsLoaded && !(RogueCatalog.products || []).length) return "Loading…";
+      return "No products yet.";
+    }
     if (!RogueCatalog.loaded) return "Loading…";
     return kind === "skills" ? "No skills yet." : "No MCP servers yet.";
+  }
+
+  function itemPrice(item) {
+    var n = typeof item.price === "number" ? item.price : parseFloat(item.price);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function priceLabel(item) {
+    var n = itemPrice(item);
+    if (n <= 0) return "$0+";
+    if (Number.isInteger(n)) return "$" + n;
+    return "$" + n.toFixed(2);
+  }
+
+  function priceHtml(item) {
+    return '<span class="price-pill" title="Price">' + priceLabel(item) + "</span>";
+  }
+
+  function metricHtml(item, votes, cls) {
+    if (kind === "products") return priceHtml(item);
+    return starHtml(item, votes, cls);
   }
 
   function searchHref(category) {
@@ -97,7 +133,9 @@
 
   function cardHtml(item, rank) {
     var votes = typeof item.votes === "number" ? item.votes : (item.stars || 0);
-    var badge = item.badge || (kind === "servers" ? "MCP" : item.name.slice(0, 2).toUpperCase());
+    var badge =
+      item.badge ||
+      (kind === "servers" ? "MCP" : kind === "products" ? "DIG" : item.name.slice(0, 2).toUpperCase());
 
     if (mode === "top") {
       return (
@@ -112,7 +150,7 @@
             tagsHtml(item, 3) +
             '<span class="card-foot">' +
               '<span class="pill">' + item.category + "</span>" +
-              starHtml(item, votes, "top-votes") +
+              metricHtml(item, votes, "top-votes") +
             "</span>" +
           "</span>" +
         "</a></li>"
@@ -131,7 +169,7 @@
           tagsHtml(item, 4) +
           '<span class="card-foot">' +
             '<span class="pill">' + item.category + "</span>" +
-            starHtml(item, votes, "card-stars") +
+            metricHtml(item, votes, "card-stars") +
           "</span>" +
         "</a></li>"
       );
@@ -149,7 +187,7 @@
           tagsHtml(item, 4) +
           '<span class="card-foot">' +
             '<span class="pill">' + item.category + "</span>" +
-            starHtml(item, votes, "card-metric") +
+            metricHtml(item, votes, "card-metric") +
           "</span>" +
         "</a></li>"
       );
@@ -164,7 +202,7 @@
           tagsHtml(item, 3) +
           '<span class="card-foot">' +
             '<span class="pill">' + item.category + "</span>" +
-            starHtml(item, votes, "card-stars") +
+            metricHtml(item, votes, "card-stars") +
           "</span>" +
         "</a></li>"
       );
@@ -177,7 +215,7 @@
         tagsHtml(item, 3) +
         '<span class="card-foot">' +
           '<span class="pill">' + item.category + "</span>" +
-          starHtml(item, votes, "card-stars") +
+          metricHtml(item, votes, "card-stars") +
         "</span>" +
       "</a></li>"
     );
@@ -222,6 +260,18 @@
         return hay.indexOf(q) !== -1;
       });
     }
+    if (kind === "products") {
+      if (state.minPrice != null) {
+        list = list.filter(function (item) {
+          return itemPrice(item) >= state.minPrice;
+        });
+      }
+      if (state.maxPrice != null) {
+        list = list.filter(function (item) {
+          return itemPrice(item) <= state.maxPrice;
+        });
+      }
+    }
     return list;
   }
 
@@ -231,6 +281,8 @@
     if (state.category) next.set("category", state.category);
     if (state.tag) next.set("tag", state.tag);
     if (mode === "top" && state.range !== "all-time") next.set("range", state.range);
+    if (kind === "products" && state.minPrice != null) next.set("minPrice", String(state.minPrice));
+    if (kind === "products" && state.maxPrice != null) next.set("maxPrice", String(state.maxPrice));
     if (state.page > 1) next.set("page", String(state.page));
     var qs = next.toString();
     var url = location.pathname + (qs ? "?" + qs : "") + location.hash;
@@ -346,6 +398,7 @@
       "social media management": iconSvg('<circle cx="12" cy="12" r="8"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"></circle><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"></circle>'),
       "game development": iconSvg('<rect x="3" y="9" width="18" height="8" rx="3"></rect><circle cx="8" cy="13" r="1.2"></circle><path d="M15 12h3M16.5 10.5v3"></path>'),
       "mobile development": iconSvg('<rect x="8" y="3" width="8" height="18" rx="2"></rect><path d="M11 18h2"></path>'),
+      "motion & media": iconSvg('<rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M10 10l5 2-5 2z"></path>'),
       other: iconSvg('<circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l2.5 2.5"></path>'),
       official: iconSvg('<path d="M12 3l2 5h5l-4 3.5 1.5 5.5L12 14l-4.5 3 1.5-5.5L5 8h5z"></path>')
     };
@@ -539,8 +592,77 @@
     });
   }
 
+  function wirePriceFilters() {
+    if (kind !== "products") return;
+    var host = document.querySelector("[data-price-filters]");
+    if (!host || host.getAttribute("data-wired")) return;
+    host.setAttribute("data-wired", "1");
+    host.innerHTML =
+      '<div class="price-filter-bar" role="group" aria-label="Price range">' +
+        '<label class="price-filter-field">' +
+          '<span>Min price</span>' +
+          '<input type="number" min="0" step="1" inputmode="decimal" data-price-min placeholder="0" />' +
+        "</label>" +
+        '<label class="price-filter-field">' +
+          '<span>Max price</span>' +
+          '<input type="number" min="0" step="1" inputmode="decimal" data-price-max placeholder="Any" />' +
+        "</label>" +
+        '<button type="button" class="price-filter-apply" data-price-apply>Apply</button>' +
+        '<button type="button" class="price-filter-clear" data-price-clear>Clear</button>' +
+      "</div>";
+
+    var minInput = host.querySelector("[data-price-min]");
+    var maxInput = host.querySelector("[data-price-max]");
+    var applyBtn = host.querySelector("[data-price-apply]");
+    var clearBtn = host.querySelector("[data-price-clear]");
+
+    function fillInputs() {
+      if (minInput) minInput.value = state.minPrice != null ? String(state.minPrice) : "";
+      if (maxInput) maxInput.value = state.maxPrice != null ? String(state.maxPrice) : "";
+    }
+
+    function readAndApply() {
+      var minRaw = minInput && minInput.value.trim() !== "" ? parseFloat(minInput.value) : null;
+      var maxRaw = maxInput && maxInput.value.trim() !== "" ? parseFloat(maxInput.value) : null;
+      state.minPrice = minRaw != null && !isNaN(minRaw) ? minRaw : null;
+      state.maxPrice = maxRaw != null && !isNaN(maxRaw) ? maxRaw : null;
+      if (state.minPrice != null && state.maxPrice != null && state.minPrice > state.maxPrice) {
+        var swap = state.minPrice;
+        state.minPrice = state.maxPrice;
+        state.maxPrice = swap;
+        fillInputs();
+      }
+      state.page = 1;
+      syncUrl();
+      render();
+    }
+
+    fillInputs();
+    if (applyBtn) applyBtn.addEventListener("click", readAndApply);
+    if (clearBtn) {
+      clearBtn.addEventListener("click", function () {
+        state.minPrice = null;
+        state.maxPrice = null;
+        fillInputs();
+        state.page = 1;
+        syncUrl();
+        render();
+      });
+    }
+    [minInput, maxInput].forEach(function (el) {
+      if (!el) return;
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          readAndApply();
+        }
+      });
+    });
+  }
+
   if (mode === "all" || mode === "search") {
     wireFilters();
+    wirePriceFilters();
   }
   if (mode === "top") {
     wireTopRange();
@@ -550,6 +672,17 @@
     syncItems();
     if (mode === "all" || mode === "search") {
       wireFilters();
+      wirePriceFilters();
+    }
+    render();
+  });
+
+  document.addEventListener("rogue-catalog:products-loaded", function () {
+    if (kind !== "products") return;
+    syncItems();
+    if (mode === "all" || mode === "search") {
+      wireFilters();
+      wirePriceFilters();
     }
     render();
   });

@@ -62,6 +62,22 @@
             '<a href="' + href("skills/search/") + '" role="menuitem">Search Skills</a>' +
           "</div>" +
         "</div>" +
+        '<div class="nav-dd">' +
+          '<button type="button" class="nav-dd-btn" aria-expanded="false" aria-haspopup="true">' +
+            '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+              '<path d="M4 7h16v12H4z"></path><path d="M8 7V5h8v2"></path>' +
+            "</svg>" +
+            "<span>Digital Products</span>" +
+            '<svg class="nav-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>' +
+          "</button>" +
+          '<div class="nav-dd-menu" role="menu">' +
+            '<a href="' + href("products/") + '" role="menuitem">All Products</a>' +
+            '<a href="' + href("products/categories/") + '" role="menuitem">Categories</a>' +
+            '<a href="' + href("products/tags/") + '" role="menuitem">Tags</a>' +
+            '<a href="' + href("products/top/") + '" role="menuitem">Top Products</a>' +
+            '<a href="' + href("products/search/") + '" role="menuitem">Search Products</a>' +
+          "</div>" +
+        "</div>" +
         '<a class="nav-studio" href="' + studioHome + '" rel="noopener">Rogue.dev</a>' +
         '<a class="nav-cta" href="https://github.com/rogue-dev-studio" rel="noopener">GitHub</a>' +
       "</nav>";
@@ -77,7 +93,7 @@
       '<div class="site-footer-main">' +
         '<div class="site-footer-brand">' +
           '<a class="site-footer-logo" href="' + href("") + '">Rogue Market Agent</a>' +
-          '<p>Discover MCP servers and Agent Skills that connect AI agents to your tools. Browse the catalog to get started.</p>' +
+          '<p>Discover MCP servers, Agent Skills, and digital downloads for AI workflows.</p>' +
         "</div>" +
         '<div class="site-footer-cols">' +
           '<div class="site-footer-col">' +
@@ -85,6 +101,7 @@
             '<a href="' + href("servers/search/") + '">MCP Search</a>' +
             '<a href="' + href("servers/") + '">MCP Servers</a>' +
             '<a href="' + href("skills/") + '">Agent Skills</a>' +
+            '<a href="' + href("products/") + '">Digital Products</a>' +
           "</div>" +
           '<div class="site-footer-col">' +
             "<h3>Publish</h3>" +
