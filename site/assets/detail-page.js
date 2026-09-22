@@ -171,9 +171,17 @@
     });
   }
 
+  function priceLabel(item) {
+    var n = typeof item.price === "number" ? item.price : parseFloat(item.price);
+    if (isNaN(n) || n <= 0) return "$0+";
+    if (Number.isInteger(n)) return "$" + n;
+    return "$" + n.toFixed(2);
+  }
+
   function pillsHtml(item) {
     var root = (window.RogueSite && RogueSite.root && RogueSite.root()) || base;
     var parts = [];
+    parts.push('<span class="price-pill" title="Price">' + esc(priceLabel(item)) + "</span>");
     if (item.category) {
       parts.push(
         '<a class="pill pill-link" href="' +
@@ -372,7 +380,24 @@
     setText("[data-detail-loading]", msg || "Item not found.");
   }
 
+  function parsePriceFromTopics(topics) {
+    var list = Array.isArray(topics) ? topics : [];
+    for (var i = 0; i < list.length; i++) {
+      var m = String(list[i] || "").match(/^price-(\d+(?:\.\d+)?)$/i);
+      if (m) {
+        var n = parseFloat(m[1]);
+        if (!isNaN(n) && n >= 0) return n;
+      }
+    }
+    return 0;
+  }
+
   function mergeRepo(item, repo) {
+    var topics = Array.isArray(repo.topics) ? repo.topics : [];
+    var price =
+      typeof item.price === "number" && !isNaN(item.price)
+        ? item.price
+        : parsePriceFromTopics(topics);
     return {
       name: item.name || repo.name,
       owner: item.owner || (repo.owner && repo.owner.login) || parseRepo(repo.full_name).owner,
@@ -380,9 +405,10 @@
       githubUrl: item.githubUrl || repo.html_url,
       description: item.description || repo.description || "No description yet.",
       category: item.category || "Other",
-      tags: item.tags && item.tags.length ? item.tags : Array.isArray(repo.topics) ? repo.topics : [],
+      tags: item.tags && item.tags.length ? item.tags : topics,
       badge: item.badge || (kind === "servers" ? "MCP" : (repo.name || "").slice(0, 2).toUpperCase()),
       stars: typeof item.stars === "number" ? item.stars : repo.stargazers_count || 0,
+      price: price,
       language: item.language || repo.language || "",
       homepage: item.homepage || repo.homepage || "",
       addedAt: item.addedAt || (repo.created_at || "").slice(0, 10),
@@ -395,6 +421,7 @@
 
     return fetchRepo(parsed.full)
       .then(function (repo) {
+        var topics = Array.isArray(repo.topics) ? repo.topics : [];
         var baseItem = fromCatalog || {
           name: repo.name,
           owner: (repo.owner && repo.owner.login) || parsed.owner,
@@ -402,9 +429,10 @@
           githubUrl: repo.html_url,
           description: repo.description || "No description yet.",
           category: "Other",
-          tags: Array.isArray(repo.topics) ? repo.topics : [],
+          tags: topics,
           badge: kind === "servers" ? "MCP" : repo.name.slice(0, 2).toUpperCase(),
-          stars: repo.stargazers_count || 0
+          stars: repo.stargazers_count || 0,
+          price: parsePriceFromTopics(topics)
         };
         return mergeRepo(baseItem, repo);
       })

@@ -2,6 +2,10 @@
 
 Public **skills / MCP / AI agents** marketplace by [Rogue Development](https://github.com/rogue-dev-studio).
 
+Skills, MCP servers, and digital products all show a **price pill** (`$0+` when free / unset, otherwise the listed amount) and support **min/max price** filters on All & Search.
+
+Optional GitHub topic for paid skills/MCP: `price-12` (sets price to 12). Omit or use `price-0` for `$0+`.
+
 ## Repo
 
 - **Name:** `rogue-market-agent`

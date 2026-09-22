@@ -1477,6 +1477,15 @@ a.pill-link:focus-visible {
   color: var(--steel);
 }
 
+.card-metrics {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .category-grid {
   list-style: none;
   margin: 0;

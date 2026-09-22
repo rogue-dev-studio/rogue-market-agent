@@ -116,10 +116,21 @@
     return "Other";
   }
 
+  function parsePrice(topics) {
+    for (var i = 0; i < topics.length; i++) {
+      var m = String(topics[i] || "").match(/^price-(\d+(?:\.\d+)?)$/i);
+      if (m) {
+        var n = parseFloat(m[1]);
+        if (!isNaN(n) && n >= 0) return n;
+      }
+    }
+    return 0;
+  }
+
   function mapRepo(repo, kind) {
     var topics = Array.isArray(repo.topics) ? repo.topics.slice() : [];
     var tags = topics.filter(function (t) {
-      return !TOPIC_META[t];
+      return !TOPIC_META[t] && !/^price-\d/i.test(String(t || ""));
     });
     var owner = (repo.owner && repo.owner.login) || catalog.org || "rogue-dev-studio";
     var name = repo.name || "untitled";
@@ -138,6 +149,7 @@
       rank: 0,
       stars: stars,
       votes: stars,
+      price: parsePrice(topics),
       addedAt: (repo.created_at || "").slice(0, 10),
       description: repo.description || "No description yet.",
       source: "github"

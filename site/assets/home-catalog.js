@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:27:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-22 12:30:00
+ * @Last Modified time: 2026-09-22 12:50:00
  */
 (function () {
   function detailHref(item, kind) {
@@ -35,13 +35,11 @@
       " · " +
       (item.owner || "rogue-dev-studio");
     var foot =
-      kind === "products"
-        ? '<span class="card-foot"><span class="pill">' +
-          (item.category || "Product") +
-          '</span><span class="price-pill">' +
-          priceLabel(item) +
-          "</span></span>"
-        : "";
+      '<span class="card-foot"><span class="pill">' +
+      (item.category || (kind === "products" ? "Product" : "Other")) +
+      '</span><span class="price-pill">' +
+      priceLabel(item) +
+      "</span></span>";
     return (
       '<li><a class="skill-card' +
       (kind === "servers" ? " server-card" : "") +

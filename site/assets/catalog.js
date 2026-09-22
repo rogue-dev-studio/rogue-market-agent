@@ -90,7 +90,12 @@
 
   function metricHtml(item, votes, cls) {
     if (kind === "products") return priceHtml(item);
-    return starHtml(item, votes, cls);
+    return (
+      '<span class="card-metrics">' +
+      priceHtml(item) +
+      starHtml(item, votes, cls) +
+      "</span>"
+    );
   }
 
   function searchHref(category) {
@@ -260,17 +265,15 @@
         return hay.indexOf(q) !== -1;
       });
     }
-    if (kind === "products") {
-      if (state.minPrice != null) {
-        list = list.filter(function (item) {
-          return itemPrice(item) >= state.minPrice;
-        });
-      }
-      if (state.maxPrice != null) {
-        list = list.filter(function (item) {
-          return itemPrice(item) <= state.maxPrice;
-        });
-      }
+    if (state.minPrice != null) {
+      list = list.filter(function (item) {
+        return itemPrice(item) >= state.minPrice;
+      });
+    }
+    if (state.maxPrice != null) {
+      list = list.filter(function (item) {
+        return itemPrice(item) <= state.maxPrice;
+      });
     }
     return list;
   }
@@ -281,8 +284,8 @@
     if (state.category) next.set("category", state.category);
     if (state.tag) next.set("tag", state.tag);
     if (mode === "top" && state.range !== "all-time") next.set("range", state.range);
-    if (kind === "products" && state.minPrice != null) next.set("minPrice", String(state.minPrice));
-    if (kind === "products" && state.maxPrice != null) next.set("maxPrice", String(state.maxPrice));
+    if (state.minPrice != null) next.set("minPrice", String(state.minPrice));
+    if (state.maxPrice != null) next.set("maxPrice", String(state.maxPrice));
     if (state.page > 1) next.set("page", String(state.page));
     var qs = next.toString();
     var url = location.pathname + (qs ? "?" + qs : "") + location.hash;
@@ -593,7 +596,6 @@
   }
 
   function wirePriceFilters() {
-    if (kind !== "products") return;
     var host = document.querySelector("[data-price-filters]");
     if (!host || host.getAttribute("data-wired")) return;
     host.setAttribute("data-wired", "1");
