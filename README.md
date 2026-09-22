@@ -17,6 +17,13 @@ Skill / MCP listings stay **empty until** a public repo under `rogue-dev-studio`
 | `rogue-market-mcp` | MCP Servers |
 
 Add the matching topic on a public `rogue-dev-studio` repo; the site picks it up via the GitHub topics API.
+
+## Commerce (Gumroad)
+
+Paid digital downloads use Gumroad; Market stays discovery. See [`commerce/`](commerce/).
+
+Pilot: [Night Drive — Car Near Mountains](https://roguedevstudio.gumroad.com/l/hppwla)
+
 ## Structure
 
 ```text

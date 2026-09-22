@@ -1,0 +1,12 @@
+{
+  "status": "coming_soon",
+  "currency": "USD",
+  "price": 0,
+  "gumroad": {
+    "productUrl": "",
+    "productId": ""
+  },
+  "includes": [],
+  "freeTeaser": true,
+  "_comment": "Copy into a market package root when that SKU goes paid. Never put API tokens here."
+}
