@@ -197,10 +197,17 @@
       feed.store
     );
     if (!name) return null;
+    // Publish date only — never collection added_time (that is "added to set").
     var addedRaw = String(
-      raw.addedAt || raw.publishedAt || raw.added_time || raw.added_date || ""
+      raw.publishedAt || raw.added_date || raw.addedAt || ""
     ).trim();
     var addedAt = addedRaw ? addedRaw.slice(0, 10) : "";
+    if (addedAt && raw.collectionAddedAt) {
+      var colDay = String(raw.collectionAddedAt).slice(0, 10);
+      if (addedAt === colDay && !raw.publishedAt && !raw.added_date) {
+        addedAt = "";
+      }
+    }
     var contentCategory =
       (window.RogueCatalog &&
         RogueCatalog.platformContentCategory &&
@@ -228,6 +235,7 @@
       image: thumb,
       stores: [{ id: feed.store, url: url, primary: true }],
       addedAt: addedAt,
+      publishedAt: addedAt,
       license: raw.license || "",
       source: feed.store,
       collection: raw.collection || "",
