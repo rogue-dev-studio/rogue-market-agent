@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-label="Night Drive cover">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1220"/>
+      <stop offset="55%" stop-color="#15233a"/>
+      <stop offset="100%" stop-color="#1c2b22"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#sky)"/>
+  <circle cx="520" cy="78" r="28" fill="#e8edf5" opacity="0.9"/>
+  <circle cx="508" cy="78" r="28" fill="#0b1220"/>
+  <path d="M0 250 L120 170 L220 230 L340 140 L460 210 L560 160 L640 220 L640 400 L0 400 Z" fill="#243247"/>
+  <path d="M0 280 L90 220 L180 270 L300 190 L420 260 L540 200 L640 250 L640 400 L0 400 Z" fill="#1a2638"/>
+  <path d="M0 310 L640 310 L640 400 L0 400 Z" fill="#121820"/>
+  <path d="M300 310 L320 400 L280 400 Z" fill="#2a3340"/>
+  <g fill="#0e151c">
+    <path d="M70 310 L85 250 L100 310 Z"/>
+    <path d="M150 310 L168 235 L186 310 Z"/>
+    <path d="M480 310 L498 240 L516 310 Z"/>
+    <path d="M560 310 L575 255 L590 310 Z"/>
+  </g>
+  <rect x="250" y="292" width="78" height="22" rx="4" fill="#e47909"/>
+  <circle cx="265" cy="314" r="8" fill="#1a1a1a"/>
+  <circle cx="313" cy="314" r="8" fill="#1a1a1a"/>
+  <text x="32" y="48" fill="#9aa4b2" font-family="IBM Plex Mono, monospace" font-size="14" letter-spacing="3">ROGUE DEV</text>
+  <text x="32" y="92" fill="#f5f5f5" font-family="IBM Plex Mono, monospace" font-size="34" font-weight="700">Night Drive</text>
+</svg>

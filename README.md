@@ -1,4 +1,4 @@
-﻿# Rogue Market Agent
+# Rogue Market Agent
 
 Public **skills / MCP / AI agents** marketplace by [Rogue Development](https://github.com/rogue-dev-studio).
 
@@ -22,13 +22,13 @@ Skill / MCP listings stay **empty until** a public repo under `rogue-dev-studio`
 
 Add the matching topic on a public `rogue-dev-studio` repo; the site picks it up via the GitHub topics API.
 
-**Digital products** are static entries in `site/assets/catalog-products.js` (same browse UX as skills/MCP, plus price pills and min/max price filters). Checkout stays on Gumroad.
+**Digital products** are static entries in `site/assets/catalog-products.js` (same browse UX as skills/MCP, plus price pills and min/max price filters). Checkout can be on **Gumroad, Sketchfab, Shutterstock**, and other listed storefronts — see [`commerce/marketplaces.md`](commerce/marketplaces.md).
 
-## Commerce (Gumroad)
+## Commerce (multi-store)
 
-Paid digital downloads use Gumroad; Market stays discovery. See [`commerce/`](commerce/).
+Paid / listed digital downloads use external markets; Market stays discovery. See [`commerce/`](commerce/).
 
-Pilot: [Night Drive — Car Near Mountains](https://roguedevstudio.gumroad.com/l/hppwla) (`$0+` PWYW on Market)
+Pilot: [Night Drive — Car Near Mountains](https://roguedevstudio.gumroad.com/l/hppwla) (`$0+` PWYW on Market; add more `stores[]` URLs when live)
 
 ## Structure
 
@@ -56,8 +56,8 @@ npx --yes serve site
 
 ## Contact
 
-- Email: [aris.hadisopiyan@gmail.com](mailto:aris.hadisopiyan@gmail.com)
-- Studio: [https://rogue-dev-studio.github.io/](https://rogue-dev-studio.github.io/)
+- Studio: [https://rogue-dev-studio.github.io/#contact](https://rogue-dev-studio.github.io/#contact)
+- GitHub: [https://github.com/rogue-dev-studio](https://github.com/rogue-dev-studio)
 
 ## Attribution
 

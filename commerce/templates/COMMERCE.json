@@ -2,11 +2,40 @@
   "status": "coming_soon",
   "currency": "USD",
   "price": 0,
+  "stores": [
+    {
+      "id": "gumroad",
+      "productUrl": "",
+      "productId": "",
+      "primary": true
+    },
+    {
+      "id": "sketchfab",
+      "productUrl": ""
+    },
+    {
+      "id": "shutterstock",
+      "productUrl": ""
+    },
+    {
+      "id": "turbosquid",
+      "productUrl": ""
+    },
+    {
+      "id": "cgtrader",
+      "productUrl": ""
+    },
+    {
+      "id": "itch",
+      "productUrl": ""
+    }
+  ],
   "gumroad": {
     "productUrl": "",
-    "productId": ""
+    "productId": "",
+    "_comment": "Legacy single-store field; prefer stores[]."
   },
   "includes": [],
   "freeTeaser": true,
-  "_comment": "Copy into a market package root when that SKU goes paid. Never put API tokens here."
+  "_comment": "Copy into a market package root when that SKU goes paid. Never put API tokens here. Supported store ids: gumroad, sketchfab, shutterstock, adobe-stock, turbosquid, cgtrader, itch, unity, fab, other."
 }

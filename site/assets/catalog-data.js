@@ -39,6 +39,9 @@ window.RogueCatalog = {
   servers: [],
   skills: [],
   products: [],
+  productCategories: [],
+  productTags: [],
+  productTagsByCategory: {},
   loaded: false,
   productsLoaded: false,
   source: "github-topics"

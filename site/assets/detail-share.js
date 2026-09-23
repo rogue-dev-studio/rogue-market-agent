@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:14:00
  * @Last Modified by: rogue-dev-studio
@@ -65,7 +65,7 @@
     var title =
       (btn && btn.getAttribute("data-share-title")) ||
       document.title ||
-      "Rogue Market Agent";
+      "Rogue Assets Store";
     var text =
       (btn && btn.getAttribute("data-share-text")) ||
       title;

@@ -1,7 +1,9 @@
 # Paid products on Rogue Market (Gumroad)
 
-Status: **foundation live in repo** — Market UI CTA still pending  
-Checkout: **Gumroad** ([roguedevstudio.gumroad.com](https://roguedevstudio.gumroad.com))  
+> Gumroad is one storefront among several. See [marketplaces.md](marketplaces.md) for Sketchfab, Shutterstock, and others.
+
+Status: **foundation live in repo**  
+Checkout: **Gumroad** ([roguedevstudio.gumroad.com](https://roguedevstudio.gumroad.com)) (and/or other stores via `stores[]`)  
 Storefront discovery: [Rogue Market Agent](https://rogue-dev-studio.github.io/rogue-market-agent/)
 
 ## Goal

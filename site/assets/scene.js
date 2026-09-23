@@ -239,8 +239,8 @@ function createHeroScene(mount) {
   const isHero = mode === "hero";
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(isHero ? 42 : 40, 1, 0.1, 100);
-  camera.position.set(0, 0.9, isHero ? 11 : 10.5);
+  const camera = new THREE.PerspectiveCamera(isHero ? 36 : 40, 1, 0.1, 100);
+  camera.position.set(0, isHero ? 0.35 : 0.9, isHero ? 14.5 : 10.5);
 
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -260,7 +260,7 @@ function createHeroScene(mount) {
   const root = new THREE.Group();
   const rootBase = { x: 0, y: 0 };
   if (isHero) {
-    root.scale.setScalar(0.92);
+    root.scale.setScalar(0.74);
   }
   scene.add(root);
 

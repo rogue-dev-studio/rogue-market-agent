@@ -1,8 +1,8 @@
-/**
+﻿/**
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 14:15:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-20 14:35:00
+ * @Last Modified time: 2026-09-22 20:45:00
  */
 (function () {
   var kind = document.body.getAttribute("data-detail-kind") || "servers";
@@ -173,9 +173,93 @@
 
   function priceLabel(item) {
     var n = typeof item.price === "number" ? item.price : parseFloat(item.price);
-    if (isNaN(n) || n <= 0) return "$0+";
+    if (isNaN(n) || n <= 0) return "Free";
     if (Number.isInteger(n)) return "$" + n;
     return "$" + n.toFixed(2);
+  }
+
+  function starsGlyph(scoreOutOf5) {
+    var filled = Math.round(Math.max(0, Math.min(5, scoreOutOf5 || 0)));
+    var out = "";
+    for (var i = 0; i < 5; i++) out += i < filled ? "★" : "☆";
+    return out;
+  }
+
+  function formatScore(score) {
+    if (typeof score !== "number" || isNaN(score) || score <= 0) return "0";
+    var n = Math.max(0, Math.min(5, score));
+    if (Number.isInteger(n)) return String(n);
+    return n.toFixed(1);
+  }
+
+  function applyRating(item, repoFull) {
+    var countMode =
+      window.RogueCards && typeof RogueCards.isCountOnlyRating === "function"
+        ? RogueCards.isCountOnlyRating(item, kind)
+        : !!(item && item.githubRepo);
+    var ratingEl = document.querySelector("[data-detail-rating]");
+    var starsEl = document.querySelector("[data-detail-stars]");
+    var scoreEl = document.querySelector("[data-detail-score]");
+    var countEl = document.querySelector("[data-detail-rating-count]");
+
+    if (countMode) {
+      var count =
+        window.RogueCards && typeof RogueCards.engagementCount === "function"
+          ? RogueCards.engagementCount(item, kind)
+          : typeof item.stars === "number"
+            ? item.stars
+            : item.votes || 0;
+      var hasCount = count > 0;
+      if (starsEl) {
+        starsEl.textContent =
+          window.RogueCards && RogueCards.countStarGlyph
+            ? RogueCards.countStarGlyph(count)
+            : hasCount
+              ? "★"
+              : "☆";
+        starsEl.setAttribute("data-star-glyph", "");
+      }
+      if (scoreEl) {
+        scoreEl.hidden = true;
+        scoreEl.textContent = "";
+      }
+      if (countEl) countEl.textContent = String(count);
+      if (ratingEl) {
+        ratingEl.classList.add("asset-card-rating-count");
+        ratingEl.classList.toggle("asset-card-rating-empty", !hasCount);
+        ratingEl.setAttribute("data-rating-mode", "count");
+        ratingEl.setAttribute("title", "GitHub stars");
+        if (repoFull) ratingEl.setAttribute("data-github-repo", repoFull);
+        else ratingEl.removeAttribute("data-github-repo");
+      }
+      return;
+    }
+
+    var scoreRaw = typeof item.rating === "number" ? item.rating : parseFloat(item.rating);
+    var hasScore = !isNaN(scoreRaw) && scoreRaw > 0;
+    var score = hasScore ? scoreRaw : 0;
+    var countRaw =
+      typeof item.ratingCount === "number" ? item.ratingCount : parseInt(item.ratingCount, 10);
+    var votes = typeof item.votes === "number" ? item.votes : item.stars || 0;
+    var total = !isNaN(countRaw) && countRaw >= 0 ? countRaw : votes || 0;
+
+    if (starsEl) {
+      starsEl.textContent = starsGlyph(score);
+      starsEl.removeAttribute("data-star-glyph");
+    }
+    if (scoreEl) {
+      scoreEl.hidden = false;
+      scoreEl.textContent = formatScore(score);
+    }
+    if (countEl) countEl.textContent = String(total);
+    if (ratingEl) {
+      ratingEl.classList.remove("asset-card-rating-count");
+      ratingEl.classList.toggle("asset-card-rating-empty", !hasScore);
+      ratingEl.setAttribute("data-rating-mode", "average");
+      ratingEl.setAttribute("title", "Rating");
+      if (repoFull) ratingEl.setAttribute("data-github-repo", repoFull);
+      else ratingEl.removeAttribute("data-github-repo");
+    }
   }
 
   function pillsHtml(item) {
@@ -203,59 +287,129 @@
     return parts.join("");
   }
 
-  function overviewMetaHtml(item) {
-    var root = (window.RogueSite && RogueSite.root && RogueSite.root()) || base;
-    var bits = [];
-    if (item.category) {
-      bits.push(
-        'Category: <a href="' +
-          esc(root + kind + "/search/?category=" + encodeURIComponent(item.category)) +
-          '">' +
-          esc(item.category) +
-          "</a>"
-      );
+  function formatFileSize(sizeKb, sizeBytes) {
+    var bytes =
+      typeof sizeBytes === "number" && sizeBytes >= 0
+        ? sizeBytes
+        : typeof sizeKb === "number" && sizeKb >= 0
+          ? sizeKb * 1024
+          : NaN;
+    if (isNaN(bytes) || bytes < 0) return "—";
+    if (bytes < 1024) return bytes + " B";
+    var kb = bytes / 1024;
+    if (kb < 1024) return (kb < 10 ? kb.toFixed(1) : Math.round(kb)) + " KB";
+    var mb = kb / 1024;
+    if (mb < 1024) return (mb < 10 ? mb.toFixed(1) : Math.round(mb)) + " MB";
+    return (mb / 1024).toFixed(2) + " GB";
+  }
+
+  function normalizeLicenseFromSource(raw) {
+    if (window.RogueLicense && typeof RogueLicense.labelFromSource === "function") {
+      return RogueLicense.labelFromSource(raw);
     }
-    if (item.tags && item.tags.length) {
-      var tagLinks = item.tags
-        .map(function (tag) {
-          return (
-            '<a href="' +
-            esc(root + kind + "/search/?tag=" + encodeURIComponent(tag)) +
-            '">' +
-            esc(tag) +
-            "</a>"
-          );
-        })
-        .join(", ");
-      bits.push("Tags: " + tagLinks);
+    var s = String(raw || "")
+      .replace(/^\uFEFF/, "")
+      .trim();
+    if (!s || /^(NOASSERTION|NONE|Other)$/i.test(s)) return "";
+    if (/\bMIT\b/i.test(s)) return "Open-Source License (MIT)";
+    if (/^Commercial\b/i.test(s) || /^Single Entity$/i.test(s)) return "Single Entity";
+    if (/^Extension Asset$/i.test(s)) return "Extension Asset";
+    if (/^Multi[- ]?Entity$/i.test(s)) return "Multi-Entity";
+    return s;
+  }
+
+  function licenseFromGithubRepo(repo) {
+    if (!repo || !repo.license) return "";
+    return (
+      normalizeLicenseFromSource(repo.license.spdx_id) ||
+      normalizeLicenseFromSource(repo.license.key) ||
+      normalizeLicenseFromSource(repo.license.name) ||
+      ""
+    );
+  }
+
+  function fetchLicenseFile(owner, name) {
+    return fetchRaw(owner, name, "LICENSE").then(function (text) {
+      if (text && String(text).trim()) return text;
+      return fetchRaw(owner, name, "LICENSE.md").then(function (md) {
+        if (md && String(md).trim()) return md;
+        return fetchRaw(owner, name, "LICENSE.txt");
+      });
+    });
+  }
+
+  function applyLicenseClassification(item, raw, allowKindDefault) {
+    if (!window.RogueLicense || typeof RogueLicense.classify !== "function") {
+      var fallback = normalizeLicenseFromSource(raw);
+      if (fallback) item.license = fallback;
+      return fallback;
     }
-    return bits.join(" · ");
+    var classified = RogueLicense.classify(raw);
+    if ((!classified || !classified.type) && allowKindDefault) {
+      classified = RogueLicense.defaultForKind ? RogueLicense.defaultForKind(kind) : null;
+    }
+    if (!classified || !classified.type) return "";
+    item.licenseTypeKey = classified.type;
+    item.licenseDetail = classified.detail || "";
+    item.license = classified.shortLabel || classified.label;
+    return item.license;
+  }
+
+  function resolveItemLicense(item, owner, name) {
+    var rawExisting = item.license || item.licenseType || item.licenseSpdx || "";
+    if (rawExisting && applyLicenseClassification(item, rawExisting, false)) {
+      return Promise.resolve(item.license);
+    }
+    return fetchLicenseFile(owner, name)
+      .then(function (text) {
+        if (text && applyLicenseClassification(item, text, false)) {
+          return item.license;
+        }
+        return applyLicenseClassification(item, "", true) || "";
+      })
+      .catch(function () {
+        return applyLicenseClassification(item, "", true) || "";
+      });
+  }
+
+  function licenseCellHtml(item) {
+    if (window.RogueLicense && typeof RogueLicense.classifyFromItem === "function") {
+      var classified = RogueLicense.classifyFromItem(item, kind);
+      if (classified && classified.type) {
+        item.licenseTypeKey = classified.type;
+        item.licenseDetail = classified.detail || "";
+        return RogueLicense.linkHtml(classified);
+      }
+    }
+    var raw = normalizeLicenseFromSource(
+      (item && (item.license || item.licenseType || item.licenseSpdx)) || ""
+    );
+    return raw ? esc(raw) : "—";
   }
 
   function aboutHtml(item, full, github) {
+    var owner = item.owner || full.split("/")[0];
     var parts = [];
-    parts.push("<p>" + esc(item.description || "No description yet.") + "</p>");
-
-    parts.push("<h3>Repository</h3><ul>");
     parts.push(
-      "<li>Owner: <a href=\"https://github.com/" +
-        esc(item.owner || full.split("/")[0]) +
-        "\" rel=\"noopener\">" +
-        esc(item.owner || full.split("/")[0]) +
-        "</a></li>"
+      '<dl class="detail-about-list">' +
+        "<dt>Author</dt>" +
+        '<dd><a href="https://github.com/' +
+        esc(owner) +
+        '" rel="noopener" data-github-user="' +
+        esc(owner) +
+        '">' +
+        esc(owner) +
+        "</a></dd>" +
+        "<dt>License type</dt>" +
+        "<dd>" +
+        licenseCellHtml(item) +
+        "</dd>" +
+        "<dt>File size</dt>" +
+        "<dd>" +
+        esc(formatFileSize(item.sizeKb, item.sizeBytes)) +
+        "</dd>" +
+        "</dl>"
     );
-    parts.push(
-      "<li>Repo: <a href=\"" + esc(github) + "\" rel=\"noopener\">" + esc(full) + "</a></li>"
-    );
-    if (item.language) parts.push("<li>Language: " + esc(item.language) + "</li>");
-    if (typeof item.stars === "number") parts.push("<li>Stars: " + esc(String(item.stars)) + "</li>");
-    if (item.addedAt) parts.push("<li>Created: " + esc(item.addedAt) + "</li>");
-    if (item.homepage) {
-      parts.push(
-        "<li>Homepage: <a href=\"" + esc(item.homepage) + "\" rel=\"noopener\">" + esc(item.homepage) + "</a></li>"
-      );
-    }
-    parts.push("</ul>");
 
     if (kind === "skills") {
       parts.push("<h3>When to use</h3><ul>");
@@ -271,14 +425,6 @@
       parts.push("</ul>");
     }
 
-    if (item.tags && item.tags.length) {
-      parts.push("<h3>Topics</h3><ul>");
-      item.tags.forEach(function (tag) {
-        parts.push("<li>" + esc(tag) + "</li>");
-      });
-      parts.push("</ul>");
-    }
-
     return parts.join("");
   }
 
@@ -291,25 +437,41 @@
     var badge = item.badge || (kind === "servers" ? "MCP" : title.slice(0, 2).toUpperCase());
     var highlights = extractHighlights(doc.body, item);
 
-    document.title = title + (kind === "skills" ? " — Skill" : " — MCP Server") + " - Rogue Market Agent";
+    document.title = title + (kind === "skills" ? " — Skill" : " — MCP Server") + " - Rogue Assets Store";
     var metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute("content", desc);
 
     setText("[data-detail-crumb]", title);
     setText("[data-detail-title]", title);
-    setText("[data-detail-lede]", desc);
     setText("[data-detail-author-label]", "by " + owner);
+    var authorLabel = document.querySelector("[data-detail-author-label]");
+    if (authorLabel) {
+      authorLabel.setAttribute("data-github-user", owner);
+      authorLabel.textContent = "by " + owner;
+    }
+    var authorLink = document.querySelector("[data-detail-author]");
+    if (authorLink) authorLink.setAttribute("data-github-user-host", owner);
     setText("[data-detail-avatar]", badge.slice(0, 2).toUpperCase());
     setHref("[data-detail-author]", "https://github.com/" + owner);
-    setHref("[data-detail-github]", github);
     setHref("[data-detail-repo]", github);
-    setHref("[data-detail-star]", github);
-
-    var starEl = document.querySelector("[data-detail-star]");
-    if (starEl) starEl.setAttribute("data-github-repo", full);
+    var saveBtn = document.querySelector("[data-save-bookmark]");
+    if (saveBtn && github) {
+      saveBtn.setAttribute("data-save-url", github);
+      saveBtn.removeAttribute("disabled");
+    }
+    if (github && typeof window.pinDetailSaveUrl === "function") {
+      window.pinDetailSaveUrl(github);
+    }
+    if (typeof window.pinDetailSaveCount === "function") {
+      window.pinDetailSaveCount(
+        typeof item.saves === "number" && item.saves >= 0 ? item.saves : 0
+      );
+    }
+    applyRating(item, full);
 
     setHtml("[data-detail-pills]", pillsHtml(item) || '<span class="pill">Other</span>');
-    setText("[data-detail-overview]", desc);
+    setText("[data-detail-lede]", desc);
+    setText("[data-detail-overview]", "");
 
     var highlightEl = document.querySelector("[data-detail-highlights]");
     if (highlightEl) {
@@ -324,7 +486,6 @@
       }
     }
 
-    setHtml("[data-detail-overview-meta]", overviewMetaHtml(item));
     setHtml("[data-detail-about]", aboutHtml(item, full, github));
 
     setText("[data-readme-source]", doc.source || "README.md");
@@ -374,6 +535,12 @@
     if (typeof window.refreshGithubStars === "function") {
       window.refreshGithubStars(document);
     }
+    if (typeof window.refreshGithubAuthors === "function") {
+      window.refreshGithubAuthors(document);
+    }
+    if (typeof window.refreshDetailSaveButtons === "function") {
+      window.refreshDetailSaveButtons();
+    }
   }
 
   function showError(msg) {
@@ -412,7 +579,18 @@
       language: item.language || repo.language || "",
       homepage: item.homepage || repo.homepage || "",
       addedAt: item.addedAt || (repo.created_at || "").slice(0, 10),
-      packageName: item.packageName || ""
+      updatedAt: item.updatedAt || (repo.pushed_at || repo.updated_at || "").slice(0, 10),
+      packageName: item.packageName || "",
+      license:
+        normalizeLicenseFromSource(item.license) ||
+        licenseFromGithubRepo(repo) ||
+        "",
+      sizeKb:
+        typeof item.sizeKb === "number"
+          ? item.sizeKb
+          : typeof repo.size === "number"
+            ? repo.size
+            : null
     };
   }
 
@@ -432,7 +610,9 @@
           tags: topics,
           badge: kind === "servers" ? "MCP" : repo.name.slice(0, 2).toUpperCase(),
           stars: repo.stargazers_count || 0,
-          price: parsePriceFromTopics(topics)
+          price: parsePriceFromTopics(topics),
+          license: licenseFromGithubRepo(repo),
+          sizeKb: typeof repo.size === "number" ? repo.size : null
         };
         return mergeRepo(baseItem, repo);
       })
@@ -441,11 +621,13 @@
         throw new Error("repo missing");
       })
       .then(function (item) {
-        return Promise.all([
-          fetchDoc(parsed.owner, parsed.name),
-          fetchInstallConfig(parsed.owner, parsed.name, item, parsed.full)
-        ]).then(function (parts) {
-          render(item, parts[0], parts[1]);
+        return resolveItemLicense(item, parsed.owner, parsed.name).then(function () {
+          return Promise.all([
+            fetchDoc(parsed.owner, parsed.name),
+            fetchInstallConfig(parsed.owner, parsed.name, item, parsed.full)
+          ]).then(function (parts) {
+            render(item, parts[0], parts[1]);
+          });
         });
       });
   }

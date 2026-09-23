@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:26:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-21 15:35:00
+ * @Last Modified time: 2026-09-22 19:30:00
  */
 (function () {
   var catalog = window.RogueCatalog;
@@ -40,7 +40,7 @@
   };
 
   function cacheKey(topic) {
-    return "rm-topic-v7:" + topic;
+    return "rm-topic-v8:" + topic;
   }
 
   function readCache(topic) {
@@ -151,6 +151,8 @@
       votes: stars,
       price: parsePrice(topics),
       addedAt: (repo.created_at || "").slice(0, 10),
+      updatedAt: (repo.pushed_at || repo.updated_at || "").slice(0, 10),
+      publishedAt: (repo.created_at || "").slice(0, 10),
       description: repo.description || "No description yet.",
       source: "github"
     };

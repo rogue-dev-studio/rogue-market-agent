@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:27:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-22 12:50:00
+ * @Last Modified time: 2026-09-22 12:56:00
  */
 (function () {
   function detailHref(item, kind) {
@@ -18,49 +18,16 @@
     return "#";
   }
 
-  function priceLabel(item) {
-    var n = typeof item.price === "number" ? item.price : parseFloat(item.price);
-    if (isNaN(n) || n <= 0) return "$0+";
-    if (Number.isInteger(n)) return "$" + n;
-    return "$" + n.toFixed(2);
-  }
-
   function card(item, kind) {
-    var href = detailHref(item, kind);
-    var badge =
-      item.badge ||
-      (kind === "servers" ? "MCP" : kind === "products" ? "DIG" : item.name.slice(0, 2).toUpperCase());
-    var meta =
-      (kind === "servers" ? "MCP" : kind === "products" ? "Product" : "Skill") +
-      " · " +
-      (item.owner || "rogue-dev-studio");
-    var foot =
-      '<span class="card-foot"><span class="pill">' +
-      (item.category || (kind === "products" ? "Product" : "Other")) +
-      '</span><span class="price-pill">' +
-      priceLabel(item) +
-      "</span></span>";
+    if (window.RogueCards && RogueCards.html) {
+      return RogueCards.html(item, kind, { href: detailHref(item, kind) });
+    }
     return (
-      '<li><a class="skill-card' +
-      (kind === "servers" ? " server-card" : "") +
-      (kind === "products" ? " product-card" : "") +
-      '" href="' +
-      href +
-      '">' +
-      (kind === "servers" || kind === "products"
-        ? '<span class="server-card-icon" aria-hidden="true">' + badge + "</span>"
-        : "") +
-      '<span class="skill-meta">' +
-      meta +
-      "</span>" +
-      '<strong class="skill-name">' +
+      '<li><a class="asset-card" href="' +
+      detailHref(item, kind) +
+      '"><strong class="asset-card-title">' +
       item.name +
-      "</strong>" +
-      '<span class="skill-desc">' +
-      item.description +
-      "</span>" +
-      foot +
-      "</a></li>"
+      "</strong></a></li>"
     );
   }
 
@@ -101,6 +68,18 @@
             return card(item, "products");
           }).join("")
         : emptyHtml("products");
+      if (products.length && typeof window.refreshGithubStars === "function") {
+        window.refreshGithubStars(productsHost);
+      }
+    }
+
+    if (typeof window.refreshGithubStars === "function") {
+      if (serversHost) window.refreshGithubStars(serversHost);
+      if (skillsHost) window.refreshGithubStars(skillsHost);
+    }
+    if (typeof window.refreshGithubAuthors === "function") {
+      if (serversHost) window.refreshGithubAuthors(serversHost);
+      if (skillsHost) window.refreshGithubAuthors(skillsHost);
     }
   }
 

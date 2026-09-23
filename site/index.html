@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   @Author: rogue-dev-studio
   @Date: 2026-09-20 10:28:37
   @Last Modified by: rogue-dev-studio
@@ -9,8 +9,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rogue Market Agent - Skills, MCP &amp; AI agents</title>
-  <meta name="description" content="Installable agent skills and MCP servers by Rogue Development. Cursor, Claude Code, OpenCode, and more." />
+  <title>Rogue Assets Store - Skills, MCP &amp; digital products</title>
+  <meta name="description" content="MCP servers, agent skills, and digital assets by Rogue Development. Cursor, Claude Code, OpenCode, and more." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -26,14 +26,19 @@
 </head>
 <body class="theme-galaxy" data-base="./">
   <div class="galaxy-dust" aria-hidden="true"></div>
+  <canvas class="galaxy-meteors" data-galaxy-meteors aria-hidden="true"></canvas>
   <div class="page">
     <header class="top" data-site-nav></header>
 
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow"><a href="https://rogue-dev-studio.github.io/" rel="noopener">Rogue Development</a></p>
-        <h1>Skills, MCP &amp; digital products</h1>
-        <p class="lede">Installable agent skills and MCP servers — plus digital downloads via Gumroad — for Cursor, Claude Code, and other hosts.</p>
+        <h1 class="hero-title">
+          <span class="hero-title-lead">Explore</span>
+          <span class="hero-title-typed">
+            <span data-hero-typed></span><span class="hero-typed-caret" aria-hidden="true"></span>
+          </span>
+        </h1>
+        <p class="lede" data-hero-lede>Connect tools and apps to your AI agent — ready for Cursor, Claude Code, and other hosts.</p>
       </div>
       <div class="hero-orbit" data-three-scene data-scene-mode="hero" aria-label="Interactive categories and tags"></div>
     </section>
@@ -61,7 +66,7 @@
     <section id="products" class="catalog">
       <div class="section-head">
         <h2>Digital Products</h2>
-        <p>Motion packs and downloads on Gumroad. <a class="inline-link" href="products/">Browse all</a></p>
+        <p>Motion packs, 3D models, and stock from <a class="inline-link" href="https://rogue-dev-studio.github.io/" rel="noopener" target="_blank">studio storefronts</a>. <a class="inline-link" href="products/">Browse all</a></p>
       </div>
       <ul class="skill-list catalog-grid" data-home-catalog="products">
         <li class="empty-state">Loading…</li>
@@ -71,10 +76,18 @@
     <footer class="foot"></footer>
   </div>
   <script src="assets/catalog-data.js" defer></script>
+  <script src="assets/catalog-cards.js" defer></script>
+  <script src="assets/catalog-product-taxonomy.js" defer></script>
   <script src="assets/catalog-products.js" defer></script>
+  <script src="assets/catalog-products-sketchfab.js" defer></script>
+  <script src="assets/catalog-products-stores.js" defer></script>
   <script src="assets/site-root.js" defer></script>
   <script src="assets/catalog-github.js" defer></script>
   <script src="assets/home-catalog.js" defer></script>
+  <script src="assets/github-stars.js" defer></script>
+  <script src="assets/github-authors.js" defer></script>
+  <script src="assets/galaxy-meteors.js" defer></script>
+  <script src="assets/hero-typed.js" defer></script>
   <script src="assets/nav.js" defer></script>
   <script type="module" src="assets/scene.js"></script>
 </body>

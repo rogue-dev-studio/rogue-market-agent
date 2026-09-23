@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 12:17:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-20 12:22:00
+ * @Last Modified time: 2026-09-22 19:20:00
  */
 (function () {
   function formatStars(n) {
@@ -14,8 +14,14 @@
 
   function applyCount(repo, count) {
     document.querySelectorAll('[data-github-repo="' + repo + '"]').forEach(function (el) {
-      var countEl = el.querySelector("[data-star-count]") || (el.hasAttribute("data-star-count") ? el : null);
+      var countEl =
+        el.querySelector("[data-star-count]") || (el.hasAttribute("data-star-count") ? el : null);
       if (countEl) countEl.textContent = formatStars(count);
+      var glyph = el.querySelector("[data-star-glyph], .asset-stars");
+      if (glyph && (el.getAttribute("data-rating-mode") === "count" || el.classList.contains("asset-card-rating-count"))) {
+        glyph.textContent = count > 0 ? "★" : "☆";
+      }
+      el.classList.toggle("asset-card-rating-empty", !(count > 0));
     });
   }
 
