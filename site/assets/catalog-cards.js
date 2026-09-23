@@ -67,8 +67,20 @@
    * True when the source only has “gave a star/like” counts — not a 1–5 average rating.
    * Sketchfab likes, GitHub stars, and similar.
    */
+  function isShutterstockItem(item) {
+    if (!item) return false;
+    if (String(item.source || "").toLowerCase() === "shutterstock") return true;
+    if (Array.isArray(item.stores)) {
+      return item.stores.some(function (s) {
+        return String((s && s.id) || "").toLowerCase() === "shutterstock";
+      });
+    }
+    return false;
+  }
+
   function isCountOnlyRating(item, kind) {
     if (!item) return kind === "servers" || kind === "skills";
+    if (isShutterstockItem(item)) return false;
     if (item.hasStarRating === true || item.ratingScale === 5) return false;
     if (item.ratingScale === "count" || item.ratingMode === "count") return true;
     if (item.source === "sketchfab" || item.sketchfabUid) return true;
@@ -228,6 +240,7 @@
   }
 
   function ratingHtml(item, kind) {
+    if (isShutterstockItem(item)) return "";
     var countMode = isCountOnlyRating(item, kind);
     var repo = kind !== "products" && item.githubRepo ? String(item.githubRepo) : "";
     var attrs = repo ? ' data-github-repo="' + esc(repo) + '"' : "";
@@ -375,6 +388,7 @@
     itemGithubStars: itemGithubStars,
     engagementCount: engagementCount,
     isCountOnlyRating: isCountOnlyRating,
+    isShutterstockItem: isShutterstockItem,
     countStarGlyph: countStarGlyph,
     starsGlyph: starsGlyph,
     formatScore: formatScore,

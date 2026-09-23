@@ -335,15 +335,14 @@
     return paths;
   }
 
-  function normalizeProductFilterTags() {
-    if (kind !== "products") return;
+  function normalizeFilterTags() {
     var preferredCats = state.categories.slice();
     state.tags = state.tags.map(function (tag) {
       var raw = String(tag || "").trim();
       if (!raw) return raw;
       if (raw.indexOf("::") !== -1) return raw;
       var label = parseScopedTag(raw).label || raw;
-      if (isPlatformLabel(label)) {
+      if (kind === "products" && isPlatformLabel(label)) {
         return scopeTagKey("Platforms", label);
       }
       var paths = findTaxonomyLabelPaths(label);
@@ -362,13 +361,15 @@
   }
 
   function expandSelectedTreePaths() {
-    if (kind !== "products") return;
     function walk(node, depth, categoryLabel, platformLabel, ancestors) {
       if (!node) return;
       var catLabel = depth === 0 ? node.label : categoryLabel;
       var platform =
         platformLabel ||
-        (depth === 1 && catLabel === "Platforms" && isPlatformLabel(node.label)
+        (depth === 1 &&
+        kind === "products" &&
+        catLabel === "Platforms" &&
+        isPlatformLabel(node.label)
           ? node.label
           : "");
       var check = nodeCheckState(node, catLabel, depth, platform);
@@ -1055,7 +1056,7 @@
 
   function setSingleCategory(name) {
     state.categories = name ? [name] : [];
-    if (kind === "products" && state.tags.length) {
+    if (state.tags.length) {
       var allowed = catalogTags().map(function (t) {
         return t.toLowerCase();
       });
@@ -1932,7 +1933,7 @@
     if (chipHost) {
       var tree = useSidebar ? taxonomyTree() : [];
       if (useSidebar && tree.length) {
-        normalizeProductFilterTags();
+        normalizeFilterTags();
         expandSelectedTreePaths();
         wireProductTree(chipHost);
         chipHost.innerHTML = tree
@@ -2627,7 +2628,7 @@
   document.addEventListener("rogue-catalog:products-loaded", function () {
     if (kind !== "products") return;
     syncItems();
-    normalizeProductFilterTags();
+    normalizeFilterTags();
     if (mode === "all" || mode === "search") {
       wireFilters();
       wireBrowseFacets();

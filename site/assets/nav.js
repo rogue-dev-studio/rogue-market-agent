@@ -222,6 +222,13 @@
           '<p>Browse MCP servers, agent skills, and digital assets curated for AI builders.</p>' +
         "</div>" +
         '<div class="site-footer-cols">' +
+          '<div class="site-footer-col site-footer-lang-col">' +
+            "<h3>Language</h3>" +
+            '<label class="sr-only" for="site-footer-lang">Language</label>' +
+            '<select id="site-footer-lang" class="site-footer-lang" data-site-lang aria-label="Language">' +
+              '<option value="en" selected>English</option>' +
+            "</select>" +
+          "</div>" +
           '<div class="site-footer-col">' +
             "<h3>Browse</h3>" +
             '<a href="' + href("servers/") + '">MCP Servers</a>' +

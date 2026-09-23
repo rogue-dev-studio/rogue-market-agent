@@ -353,7 +353,7 @@
 
   function sketchfabEngagementStat(iconSvg, count, label) {
     return (
-      '<span class="detail-engagement-stat" title="' +
+      '<span class="detail-engagement-stat" data-tooltip="' +
       esc(label) +
       '">' +
       '<span class="detail-engagement-icon" aria-hidden="true">' +
@@ -520,13 +520,29 @@
   }
 
   function applyProductRating(item) {
+    var ratingEl = document.querySelector("[data-detail-rating]");
+    if (
+      item &&
+      (item.source === "shutterstock" ||
+        (window.RogueCards &&
+          typeof RogueCards.isShutterstockItem === "function" &&
+          RogueCards.isShutterstockItem(item)))
+    ) {
+      if (ratingEl) ratingEl.hidden = true;
+      var engagementHost = document.querySelector("[data-detail-engagement]");
+      if (engagementHost) {
+        engagementHost.hidden = true;
+        engagementHost.innerHTML = "";
+      }
+      return;
+    }
+
     if (applySketchfabEngagement(item)) return;
 
     var countMode =
       window.RogueCards && typeof RogueCards.isCountOnlyRating === "function"
         ? RogueCards.isCountOnlyRating(item, "products")
         : false;
-    var ratingEl = document.querySelector("[data-detail-rating]");
     var starsEl = document.querySelector("[data-detail-stars]");
     var scoreEl = document.querySelector("[data-detail-score]");
     var countEl = document.querySelector("[data-detail-rating-count]");
@@ -558,7 +574,8 @@
         ratingEl.classList.add("asset-card-rating-count");
         ratingEl.classList.toggle("asset-card-rating-empty", !hasCount);
         ratingEl.setAttribute("data-rating-mode", "count");
-        ratingEl.setAttribute("title", "Stars");
+        ratingEl.setAttribute("data-tooltip", "Stars");
+        ratingEl.removeAttribute("title");
       }
       return;
     }
@@ -589,7 +606,8 @@
       ratingEl.classList.remove("asset-card-rating-count");
       ratingEl.classList.toggle("asset-card-rating-empty", !hasScore);
       ratingEl.setAttribute("data-rating-mode", "average");
-      ratingEl.setAttribute("title", "Rating");
+      ratingEl.setAttribute("data-tooltip", "Rating");
+      ratingEl.removeAttribute("title");
     }
   }
 

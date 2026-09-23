@@ -228,7 +228,8 @@
         ratingEl.classList.add("asset-card-rating-count");
         ratingEl.classList.toggle("asset-card-rating-empty", !hasCount);
         ratingEl.setAttribute("data-rating-mode", "count");
-        ratingEl.setAttribute("title", "GitHub stars");
+        ratingEl.setAttribute("data-tooltip", "GitHub stars");
+        ratingEl.removeAttribute("title");
         if (repoFull) ratingEl.setAttribute("data-github-repo", repoFull);
         else ratingEl.removeAttribute("data-github-repo");
       }
@@ -256,7 +257,8 @@
       ratingEl.classList.remove("asset-card-rating-count");
       ratingEl.classList.toggle("asset-card-rating-empty", !hasScore);
       ratingEl.setAttribute("data-rating-mode", "average");
-      ratingEl.setAttribute("title", "Rating");
+      ratingEl.setAttribute("data-tooltip", "Rating");
+      ratingEl.removeAttribute("title");
       if (repoFull) ratingEl.setAttribute("data-github-repo", repoFull);
       else ratingEl.removeAttribute("data-github-repo");
     }
@@ -265,26 +267,56 @@
   function pillsHtml(item) {
     var root = (window.RogueSite && RogueSite.root && RogueSite.root()) || base;
     var parts = [];
-    parts.push('<span class="price-pill" title="Price">' + esc(priceLabel(item)) + "</span>");
-    if (item.category) {
+    var cat = String(item.category || "").trim();
+    var priceText = priceLabel(item);
+
+    function searchHref(query) {
+      return root + kind + "/search/?" + query;
+    }
+
+    if (itemPriceIsFree(item)) {
+      parts.push(
+        '<a class="price-pill pill-link" title="Price" href="' +
+          esc(searchHref("price=free")) +
+          '">' +
+          esc(priceText) +
+          "</a>"
+      );
+    } else {
+      parts.push(
+        '<span class="price-pill" title="Price">' + esc(priceText) + "</span>"
+      );
+    }
+    if (cat) {
       parts.push(
         '<a class="pill pill-link" href="' +
-          esc(root + kind + "/search/?category=" + encodeURIComponent(item.category)) +
+          esc(searchHref("category=" + encodeURIComponent(cat))) +
           '">' +
-          esc(item.category) +
+          esc(cat) +
           "</a>"
       );
     }
+    var seen = {};
     (item.tags || []).forEach(function (tag) {
+      var raw = String(tag || "").trim();
+      if (!raw) return;
+      var key = raw.toLowerCase();
+      if (seen[key]) return;
+      if (cat && key === cat.toLowerCase()) return;
+      seen[key] = true;
+      var href = cat
+        ? searchHref("tag=" + encodeURIComponent(cat + "::" + raw))
+        : searchHref("tag=" + encodeURIComponent(raw));
       parts.push(
-        '<a class="pill pill-link" href="' +
-          esc(root + kind + "/search/?tag=" + encodeURIComponent(tag)) +
-          '">' +
-          esc(tag) +
-          "</a>"
+        '<a class="pill pill-link" href="' + esc(href) + '">' + esc(raw) + "</a>"
       );
     });
     return parts.join("");
+  }
+
+  function itemPriceIsFree(item) {
+    var n = typeof item.price === "number" ? item.price : parseFloat(item.price);
+    return isNaN(n) || n <= 0;
   }
 
   function formatFileSize(sizeKb, sizeBytes) {
