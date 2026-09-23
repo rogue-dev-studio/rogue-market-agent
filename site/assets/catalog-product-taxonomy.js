@@ -2,7 +2,7 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-22 13:26:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-22 14:40:00
+ * @Last Modified time: 2026-09-23 15:20:00
  */
 (function () {
   var catalog = window.RogueCatalog;
@@ -142,7 +142,7 @@
     "platforms > fab"
   ];
 
-  /** Platform leaf → content category whose taxonomy is nested under that platform. */
+  /** Platform leaf → default content category for item.contentCategory (2D/3D). */
   var PLATFORM_CONTENT = {
     shutterstock: "2d",
     "adobe-stock": "2d",
@@ -307,54 +307,6 @@
     });
   });
 
-  function cloneNodeDeep(node, idPrefix) {
-    var id = idPrefix ? idPrefix + "/" + node.slug : node.id;
-    return {
-      id: id,
-      slug: node.slug,
-      label: node.label,
-      children: (node.children || []).map(function (child) {
-        return cloneNodeDeep(child, id);
-      }),
-      childMap: {}
-    };
-  }
-
-  function pushUniqueTag(list, tag) {
-    var label = tagSet[String(tag || "").toLowerCase()] || String(tag || "").trim();
-    if (!label) return;
-    if (list.indexOf(label) < 0) list.push(label);
-  }
-
-  function attachPlatformContentTrees() {
-    var platformsRoot = rootMap.platforms;
-    if (!platformsRoot) return;
-    Object.keys(PLATFORM_CONTENT).forEach(function (platformSlug) {
-      var contentSlug = PLATFORM_CONTENT[platformSlug];
-      var contentRoot = rootMap[contentSlug];
-      var platformNode = platformsRoot.childMap["platforms/" + platformSlug];
-      if (!contentRoot || !platformNode) return;
-      (contentRoot.children || []).forEach(function (child) {
-        var cloned = cloneNodeDeep(child, platformNode.id);
-        if (
-          !platformNode.children.some(function (c) {
-            return c.slug === cloned.slug;
-          })
-        ) {
-          platformNode.children.push(cloned);
-        }
-      });
-      var contentCat = CATEGORY_LABEL[contentSlug];
-      (tagsByCategory[contentCat] || []).forEach(function (tag) {
-        pushUniqueTag(tagsByCategory.Platforms, tag);
-        var key = String(tag).toLowerCase();
-        if (!tagSet[key]) tagSet[key] = tag;
-      });
-    });
-  }
-
-  attachPlatformContentTrees();
-
   function cleanNode(node) {
     return {
       id: node.id,
@@ -364,11 +316,104 @@
     };
   }
 
-  var productTaxonomyTree = treeOrder
-    .map(function (slug) {
-      return rootMap[slug] ? cleanNode(rootMap[slug]) : null;
-    })
-    .filter(Boolean);
+  function publishTaxonomyTree() {
+    catalog.productTaxonomyTree = treeOrder
+      .map(function (slug) {
+        return rootMap[slug] ? cleanNode(rootMap[slug]) : null;
+      })
+      .filter(Boolean);
+  }
+
+  function slugifyCollection(name) {
+    return (
+      String(name || "")
+        .toLowerCase()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "collection"
+    );
+  }
+
+  function platformLabelFromItem(item) {
+    if (!item) return "";
+    var source = String(item.source || "").toLowerCase();
+    if (PLATFORM_CONTENT[source]) return titleCase(source);
+    var stores = item.stores || [];
+    if (stores[0] && stores[0].id && PLATFORM_CONTENT[stores[0].id]) {
+      return titleCase(stores[0].id);
+    }
+    var labels = Object.keys(PLATFORM_CONTENT).map(titleCase);
+    var tags = item.tags || [];
+    for (var i = 0; i < labels.length; i++) {
+      var want = labels[i].toLowerCase();
+      for (var j = 0; j < tags.length; j++) {
+        if (String(tags[j] || "").toLowerCase() === want) return labels[i];
+      }
+    }
+    return "";
+  }
+
+  /** Nest store genre categories under Platforms › {platform} (not collections / 2D). */
+  function rebuildPlatformStoreCategoryBranches(items) {
+    var platformsRoot = rootMap.platforms;
+    if (!platformsRoot) return;
+
+    Object.keys(PLATFORM_CONTENT).forEach(function (platformSlug) {
+      var platformNode = platformsRoot.childMap["platforms/" + platformSlug];
+      if (!platformNode) return;
+      platformNode.children = [];
+      platformNode.childMap = {};
+    });
+
+    var byPlatform = {};
+    (items || []).forEach(function (item) {
+      if (!item || String(item.category || "") !== "Platforms") return;
+      var platform = platformLabelFromItem(item);
+      if (!platform) return;
+      var genres = [];
+      if (Array.isArray(item.storeCategories) && item.storeCategories.length) {
+        genres = item.storeCategories.slice();
+      } else if (item.collection) {
+        genres = [String(item.collection).trim()];
+      }
+      if (!genres.length) return;
+      if (!byPlatform[platform]) byPlatform[platform] = {};
+      genres.forEach(function (label) {
+        var name = String(label || "").trim();
+        if (!name) return;
+        byPlatform[platform][name.toLowerCase()] = name;
+      });
+    });
+
+    Object.keys(byPlatform).forEach(function (platformLabel) {
+      var platformSlug = "";
+      Object.keys(PLATFORM_CONTENT).some(function (slug) {
+        if (titleCase(slug).toLowerCase() === platformLabel.toLowerCase()) {
+          platformSlug = slug;
+          return true;
+        }
+        return false;
+      });
+      if (!platformSlug) return;
+      var platformNode = platformsRoot.childMap["platforms/" + platformSlug];
+      if (!platformNode) return;
+      Object.keys(byPlatform[platformLabel])
+        .sort()
+        .forEach(function (key) {
+          var label = byPlatform[platformLabel][key];
+          var slug = slugifyCollection(label);
+          var node = ensureChild(platformNode.childMap, platformNode.id, slug, label);
+          if (platformNode.children.indexOf(node) < 0) {
+            platformNode.children.push(node);
+          }
+          registerTag("Platforms", label);
+        });
+    });
+
+    publishTaxonomyTree();
+  }
+
+  publishTaxonomyTree();
 
   var productTags = Object.keys(tagSet)
     .sort()
@@ -379,7 +424,6 @@
   catalog.productCategories = categories;
   catalog.productTags = productTags;
   catalog.productTagsByCategory = tagsByCategory;
-  catalog.productTaxonomyTree = productTaxonomyTree;
   catalog.productTaxonomyReady = true;
   catalog.platformContentCategory = {};
   Object.keys(PLATFORM_CONTENT).forEach(function (slug) {
@@ -428,19 +472,30 @@
       if (categories.indexOf(cat) < 0) cat = "Platforms";
       var contentCat = contentCategoryForItem(item);
       if (contentCat && !item.contentCategory) item.contentCategory = contentCat;
-      registerTag(cat, item.category);
-      if (contentCat && contentCat !== cat) {
-        registerTag(contentCat, contentCat);
+      var isPlatformItem = cat === "Platforms";
+      var platform = isPlatformItem ? platformLabelFromItem(item) : "";
+      if (platform) registerTag(cat, platform);
+      if (Array.isArray(item.storeCategories)) {
+        item.storeCategories.forEach(function (g) {
+          registerTag(cat, g);
+        });
+      } else if (item.collection) {
+        registerTag(cat, item.collection);
       }
       (item.tags || []).forEach(function (tag) {
         String(tag)
           .split(/\s*›\s*/)
           .forEach(function (part) {
             var trimmed = part.trim();
+            if (!trimmed) return;
             registerTag(cat, trimmed);
-            if (contentCat && contentCat !== cat) registerTag(contentCat, trimmed);
+            // Keep 2D/3D discovery tags for non-platform products only.
+            if (!isPlatformItem && contentCat && contentCat !== cat) {
+              registerTag(contentCat, trimmed);
+            }
           });
       });
     });
+    rebuildPlatformStoreCategoryBranches(items);
   };
 })();

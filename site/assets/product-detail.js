@@ -335,6 +335,9 @@
     var published = formatPublished(item.addedAt || item.publishedAt);
     if (published) row("Published", esc(published));
     if (item.collection) row("Collection", esc(String(item.collection)));
+    if (Array.isArray(item.storeCategories) && item.storeCategories.length) {
+      row("Categories", esc(item.storeCategories.join(", ")));
+    }
     if (item.kind) row("Type", esc(String(item.kind)));
     return parts.join("");
   }

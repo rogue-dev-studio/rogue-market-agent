@@ -78,12 +78,12 @@
   }
 
   var COLLECTION_TAGS = {
-    "Christmas & Holiday Vectors": ["Props", "Holiday", "Christmas"],
-    "Color Palettes & Gradients": ["Textures & Materials", "Abstract", "Gradients"],
-    "UI/UX & Gadget Icon Packs": ["GUI", "Icons", "UI"],
-    "Business & Professional Avatars": ["Characters", "Avatars", "Business"],
-    "Abstract & Conceptual Vectors": ["Textures & Materials", "Abstract", "Conceptual"],
-    "Indonesian & Islamic Culture": ["Props", "Culture", "Indonesian"]
+    "Christmas & Holiday Vectors": ["Holidays"],
+    "Color Palettes & Gradients": ["Backgrounds/Textures", "Abstract"],
+    "UI/UX & Gadget Icon Packs": ["Technology", "Signs/Symbols"],
+    "Business & Professional Avatars": ["Business/Finance", "People"],
+    "Abstract & Conceptual Vectors": ["Abstract", "Illustrations/Clip-Art"],
+    "Indonesian & Islamic Culture": ["Religion", "The Arts"]
   };
 
   var PLATFORM_LABEL = {
@@ -189,8 +189,13 @@
         ? raw.tags.slice()
         : tagsFromCollection(raw.collection || "");
     var platform = PLATFORM_LABEL[feed.store] || feed.store;
-    tags = uniqueTags([platform].concat(tags));
-    if (raw.collection) tags = uniqueTags(tags.concat([String(raw.collection)]));
+    var storeCategories = Array.isArray(raw.storeCategories)
+      ? raw.storeCategories.map(String).filter(Boolean)
+      : [];
+    tags = uniqueTags([platform].concat(tags).concat(storeCategories));
+    if (raw.collection && feed.store !== "shutterstock") {
+      tags = uniqueTags(tags.concat([String(raw.collection)]));
+    }
     var name = shortenStoreTitle(
       String(raw.title || raw.name || "").trim(),
       url,
@@ -239,6 +244,7 @@
       license: raw.license || "",
       source: feed.store,
       collection: raw.collection || "",
+      storeCategories: storeCategories,
       author: feed.author || AUTHOR.author,
       authorName: feed.authorName || AUTHOR.authorName,
       authorUrl: feed.authorUrl || AUTHOR.authorUrl,
