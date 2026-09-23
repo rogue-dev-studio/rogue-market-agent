@@ -71,14 +71,81 @@
     return root + String(item.image).replace(/^\//, "");
   }
 
+  function taxonomyHasLabel(label) {
+    var key = String(label || "").toLowerCase();
+    if (!key) return false;
+    var tree =
+      (window.RogueCatalog && RogueCatalog.productTaxonomyTree) || [];
+    function walk(nodes) {
+      for (var i = 0; i < (nodes || []).length; i++) {
+        if (String(nodes[i].label || "").toLowerCase() === key) return true;
+        if (walk(nodes[i].children)) return true;
+      }
+      return false;
+    }
+    return walk(tree);
+  }
+
   function pillsHtml(item) {
     var root = (window.RogueSite && RogueSite.root && RogueSite.root()) || "../../";
     var parts = [];
-    parts.push('<span class="price-pill" data-tooltip="Price">' + esc(priceLabel(item)) + "</span>");
+    var platform = "";
+    var labels =
+      (window.RogueCatalog && RogueCatalog.platformLabels) || [
+        "Shutterstock",
+        "Sketchfab",
+        "Gumroad",
+        "TurboSquid",
+        "CGTrader",
+        "itch.io",
+        "Adobe Stock",
+        "Unity",
+        "Fab"
+      ];
+    (item.tags || []).some(function (tag) {
+      var t = String(tag || "").trim();
+      return labels.some(function (label) {
+        if (t.toLowerCase() === String(label).toLowerCase()) {
+          platform = label;
+          return true;
+        }
+        return false;
+      });
+    });
+    if (!platform && item.source) {
+      var sourceMap = {
+        shutterstock: "Shutterstock",
+        sketchfab: "Sketchfab",
+        gumroad: "Gumroad",
+        turbosquid: "TurboSquid",
+        cgtrader: "CGTrader",
+        itch: "itch.io"
+      };
+      platform = sourceMap[String(item.source).toLowerCase()] || "";
+    }
+
+    function searchHref(query) {
+      return root + "products/search/?" + query;
+    }
+
+    var priceText = priceLabel(item);
+    if (itemPriceIsFree(item)) {
+      parts.push(
+        '<a class="price-pill pill-link" data-tooltip="Price" href="' +
+          esc(searchHref("price=free")) +
+          '">' +
+          esc(priceText) +
+          "</a>"
+      );
+    } else {
+      parts.push(
+        '<span class="price-pill" data-tooltip="Price">' + esc(priceText) + "</span>"
+      );
+    }
     if (item.category) {
       parts.push(
         '<a class="pill pill-link" href="' +
-          esc(root + "products/search/?category=" + encodeURIComponent(item.category)) +
+          esc(searchHref("category=" + encodeURIComponent(item.category))) +
           '">' +
           esc(item.category) +
           "</a>"
@@ -90,13 +157,25 @@
     ) {
       parts.push(
         '<a class="pill pill-link" href="' +
-          esc(root + "products/search/?category=" + encodeURIComponent(item.contentCategory)) +
+          esc(searchHref("category=" + encodeURIComponent(item.contentCategory))) +
           '">' +
           esc(item.contentCategory) +
           "</a>"
       );
     }
+    var contentCat = String(item.contentCategory || "").trim();
     var seen = {};
+    var genreSet = {};
+    (item.storeCategories || []).forEach(function (g) {
+      genreSet[String(g || "").toLowerCase()] = true;
+    });
+    var skipKinds = {
+      vector: 1,
+      photo: 1,
+      illustration: 1,
+      video: 1,
+      audio: 1
+    };
     (item.tags || []).forEach(function (tag) {
       String(tag)
         .split(/\s*›\s*/)
@@ -105,14 +184,35 @@
           if (!part) return;
           var key = part.toLowerCase();
           if (seen[key]) return;
+          if (key === String(item.category || "").toLowerCase()) return;
+          if (contentCat && key === contentCat.toLowerCase()) return;
+          if (skipKinds[key]) return;
           seen[key] = true;
-          parts.push(
-            '<a class="pill pill-link" href="' +
-              esc(root + "products/search/?tag=" + encodeURIComponent(part)) +
-              '">' +
-              esc(part) +
-              "</a>"
-          );
+          var href = "";
+          if (platform && key === platform.toLowerCase()) {
+            href = searchHref("tag=" + encodeURIComponent("Platforms::" + platform));
+          } else if (platform && genreSet[key]) {
+            href = searchHref(
+              "tag=" + encodeURIComponent("Platforms::" + platform + "›" + part)
+            );
+          } else if (taxonomyHasLabel(part)) {
+            if (contentCat && taxonomyHasLabel(part)) {
+              href = searchHref(
+                "tag=" + encodeURIComponent(contentCat + "::" + part)
+              );
+            } else if (item.category && item.category !== "Platforms") {
+              href = searchHref(
+                "tag=" + encodeURIComponent(item.category + "::" + part)
+              );
+            } else {
+              href = searchHref("tag=" + encodeURIComponent(part));
+            }
+          }
+          if (href) {
+            parts.push(
+              '<a class="pill pill-link" href="' + esc(href) + '">' + esc(part) + "</a>"
+            );
+          }
         });
     });
     return parts.join("");

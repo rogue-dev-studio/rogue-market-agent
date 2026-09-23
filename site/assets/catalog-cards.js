@@ -287,11 +287,36 @@
     );
   }
 
+  function cardCategoryHtml(item, kind) {
+    var category = item.category || (kind === "products" ? "Product" : "Other");
+    var parts = [category];
+    if (kind === "products") {
+      var content =
+        item.contentCategory ||
+        (window.RogueCatalog &&
+          typeof RogueCatalog.contentCategoryForProduct === "function" &&
+          RogueCatalog.contentCategoryForProduct(item)) ||
+        "";
+      content = String(content || "").trim();
+      if (content && content.toLowerCase() !== String(category).toLowerCase()) {
+        parts.push(content);
+      }
+    }
+    return (
+      '<span class="asset-card-cats">' +
+      parts
+        .map(function (label) {
+          return '<span class="asset-card-cat">' + esc(label) + "</span>";
+        })
+        .join("") +
+      "</span>"
+    );
+  }
+
   function cardHtml(item, kind, opts) {
     opts = opts || {};
     var href = opts.href || "#";
     var rank = opts.rank;
-    var category = item.category || (kind === "products" ? "Product" : "Other");
     var ownerLogin = "";
     if (item.githubRepo) ownerLogin = String(item.githubRepo).split("/")[0] || "";
     if (!ownerLogin) ownerLogin = item.owner || "";
@@ -319,9 +344,7 @@
       rankHtml +
       mediaHtml(item, kind) +
       '<span class="asset-card-body">' +
-      '<span class="asset-card-cat">' +
-      esc(category) +
-      "</span>" +
+      cardCategoryHtml(item, kind) +
       '<strong class="asset-card-title">' +
       esc(item.name || "Untitled") +
       "</strong>" +

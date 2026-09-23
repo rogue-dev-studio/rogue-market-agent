@@ -2519,12 +2519,22 @@ a.pill-link {
   color: var(--steel);
 }
 
+a.price-pill.pill-link {
+  color: var(--accent);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
 a.pill-link:hover,
 a.pill-link:focus-visible {
   border-color: rgba(228, 121, 9, 0.5);
   background: rgba(228, 121, 9, 0.12);
   color: var(--link);
   outline: none;
+}
+
+a.price-pill.pill-link:hover,
+a.price-pill.pill-link:focus-visible {
+  color: var(--link);
 }
 
 .install {
@@ -3319,6 +3329,14 @@ a.pill-link:focus-visible {
   gap: 0.4rem;
   padding: 0.85rem 0.95rem 1rem;
   flex: 1 1 auto;
+}
+
+.asset-card-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-self: flex-start;
+  max-width: 100%;
 }
 
 .asset-card-cat {
