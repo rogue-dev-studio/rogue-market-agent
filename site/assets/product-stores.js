@@ -195,6 +195,15 @@
         "</svg>"
       );
     }
+    if (id === "shutterstock") {
+      return (
+        '<svg role="img" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M12 17c0 .552.448 1 1 1h4c.552 0 1-.448 1-1v-4c0-.552-.448-1-1-1h-1v4h-4v1z"/>' +
+        '<path d="M11 6c.552 0 1 .448 1 1v1H8v4H7c-.552 0-1-.448-1-1V7c0-.552.448-1 1-1h4z"/>' +
+        '<path fill-rule="evenodd" clip-rule="evenodd" d="M5 2C3.343 2 2 3.343 2 5v14c0 1.657 1.343 3 3 3h14c1.657 0 3-1.343 3-3V5c0-1.657-1.343-3-3-3H5zm14 2H5c-.552 0-1 .448-1 1v14c0 .552.448 1 1 1h14c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1z"/>' +
+        "</svg>"
+      );
+    }
     var letter = (metaFor(id).label || "S").charAt(0).toUpperCase();
     return '<span class="detail-store-letter" aria-hidden="true">' + esc(letter) + "</span>";
   }
@@ -211,7 +220,7 @@
           (store.primary ? " is-primary" : "") +
           '" href="' +
           esc(store.url) +
-          '" rel="noopener" target="_blank" title="' +
+          '" rel="noopener" target="_blank" data-tooltip="' +
           esc(title) +
           '" aria-label="' +
           esc(title) +

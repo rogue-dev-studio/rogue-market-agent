@@ -106,19 +106,19 @@
     (model.tags || []).forEach(function (t) {
       if (t && t.name) raw.push(String(t.name).toLowerCase());
     });
-    var seen = {};
-    var out = [];
+    var seen = { sketchfab: true };
+    var out = ["Sketchfab"];
     raw.forEach(function (k) {
       var label = TAG_MAP[k];
       if (!label && /^[a-z0-9]{2,20}$/.test(k)) {
         label = k.charAt(0).toUpperCase() + k.slice(1);
       }
-      if (!label || seen[label]) return;
-      seen[label] = true;
+      if (!label || seen[label.toLowerCase()]) return;
+      seen[label.toLowerCase()] = true;
       out.push(label);
     });
-    if (!out.length) out.push("Props");
-    return out.slice(0, 6);
+    if (out.length === 1) out.push("Props");
+    return out.slice(0, 7);
   }
 
   function bestThumb(model) {
@@ -269,7 +269,8 @@
       sketchfabUid: uid,
       name: name,
       description: desc,
-      category: "3D",
+      category: "Platforms",
+      contentCategory: "3D",
       tags: mapTags(model),
       badge: "3D",
       price: price,
@@ -348,6 +349,9 @@
     });
     catalog.products = keep.concat(items);
     catalog.productsLoaded = true;
+    if (catalog.mergeProductDiscoveryTags) {
+      catalog.mergeProductDiscoveryTags(catalog.products || []);
+    }
     try {
       document.dispatchEvent(new CustomEvent("rogue-catalog:products-loaded"));
     } catch (err) {}

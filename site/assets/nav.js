@@ -275,7 +275,7 @@
                 s.url +
                 '" rel="noopener" target="_blank" aria-label="' +
                 s.label +
-                '" title="' +
+                '" data-tooltip="' +
                 s.label +
                 '">' +
                 socialIconMarkup(s.icon) +

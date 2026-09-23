@@ -73,7 +73,17 @@
     if (item.ratingScale === "count" || item.ratingMode === "count") return true;
     if (item.source === "sketchfab" || item.sketchfabUid) return true;
     if (item.githubRepo || kind === "servers" || kind === "skills") return true;
-    if (kind === "products" && item.source && item.source !== "gumroad") return true;
+    if (
+      kind === "products" &&
+      item.source &&
+      item.source !== "gumroad" &&
+      item.source !== "shutterstock" &&
+      item.source !== "turbosquid" &&
+      item.source !== "cgtrader" &&
+      item.source !== "itch"
+    ) {
+      return true;
+    }
     var scoreRaw = typeof item.rating === "number" ? item.rating : parseFloat(item.rating);
     var hasAverage = !isNaN(scoreRaw) && scoreRaw > 0 && scoreRaw <= 5;
     if (!hasAverage && (typeof item.likes === "number" || typeof item.stars === "number")) {

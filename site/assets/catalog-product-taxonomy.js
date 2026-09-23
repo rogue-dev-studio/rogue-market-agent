@@ -130,8 +130,30 @@
     "vfx > particles > spells",
     "vfx > shaders",
     "vfx > shaders > fullscreen-camera-effects",
-    "vfx > shaders > substances"
+    "vfx > shaders > substances",
+    "platforms > shutterstock",
+    "platforms > sketchfab",
+    "platforms > gumroad",
+    "platforms > turbosquid",
+    "platforms > cgtrader",
+    "platforms > itch",
+    "platforms > adobe-stock",
+    "platforms > unity",
+    "platforms > fab"
   ];
+
+  /** Platform leaf → content category whose taxonomy is nested under that platform. */
+  var PLATFORM_CONTENT = {
+    shutterstock: "2d",
+    "adobe-stock": "2d",
+    itch: "2d",
+    gumroad: "2d",
+    sketchfab: "3d",
+    turbosquid: "3d",
+    cgtrader: "3d",
+    unity: "3d",
+    fab: "3d"
+  };
 
   var CATEGORY_LABEL = {
     templates: "Templates",
@@ -140,7 +162,8 @@
     "add-ons": "Add-Ons",
     audio: "Audio",
     tools: "Tools",
-    vfx: "VFX"
+    vfx: "VFX",
+    platforms: "Platforms"
   };
 
   function titleCase(slug) {
@@ -165,7 +188,16 @@
       "generative-ai": "Generative AI",
       "behavior-ai": "Behavior AI",
       "level-design": "Level Design",
-      "sci-fi": "Sci-Fi"
+      "sci-fi": "Sci-Fi",
+      shutterstock: "Shutterstock",
+      sketchfab: "Sketchfab",
+      gumroad: "Gumroad",
+      turbosquid: "TurboSquid",
+      cgtrader: "CGTrader",
+      itch: "itch.io",
+      "adobe-stock": "Adobe Stock",
+      unity: "Unity",
+      fab: "Fab"
     };
     if (special[raw.toLowerCase()]) return special[raw.toLowerCase()];
     return raw
@@ -206,11 +238,29 @@
     return parentMap[id];
   }
 
-  var categories = ["Templates", "2D", "3D", "Add-Ons", "Audio", "Tools", "VFX"];
+  var categories = [
+    "Templates",
+    "2D",
+    "3D",
+    "Add-Ons",
+    "Audio",
+    "Tools",
+    "VFX",
+    "Platforms"
+  ];
   var tagsByCategory = {};
   var tagSet = {};
   var rootMap = {};
-  var treeOrder = ["templates", "2d", "3d", "add-ons", "audio", "tools", "vfx"];
+  var treeOrder = [
+    "templates",
+    "2d",
+    "3d",
+    "add-ons",
+    "audio",
+    "tools",
+    "vfx",
+    "platforms"
+  ];
 
   categories.forEach(function (name) {
     tagsByCategory[name] = [];
@@ -257,6 +307,54 @@
     });
   });
 
+  function cloneNodeDeep(node, idPrefix) {
+    var id = idPrefix ? idPrefix + "/" + node.slug : node.id;
+    return {
+      id: id,
+      slug: node.slug,
+      label: node.label,
+      children: (node.children || []).map(function (child) {
+        return cloneNodeDeep(child, id);
+      }),
+      childMap: {}
+    };
+  }
+
+  function pushUniqueTag(list, tag) {
+    var label = tagSet[String(tag || "").toLowerCase()] || String(tag || "").trim();
+    if (!label) return;
+    if (list.indexOf(label) < 0) list.push(label);
+  }
+
+  function attachPlatformContentTrees() {
+    var platformsRoot = rootMap.platforms;
+    if (!platformsRoot) return;
+    Object.keys(PLATFORM_CONTENT).forEach(function (platformSlug) {
+      var contentSlug = PLATFORM_CONTENT[platformSlug];
+      var contentRoot = rootMap[contentSlug];
+      var platformNode = platformsRoot.childMap["platforms/" + platformSlug];
+      if (!contentRoot || !platformNode) return;
+      (contentRoot.children || []).forEach(function (child) {
+        var cloned = cloneNodeDeep(child, platformNode.id);
+        if (
+          !platformNode.children.some(function (c) {
+            return c.slug === cloned.slug;
+          })
+        ) {
+          platformNode.children.push(cloned);
+        }
+      });
+      var contentCat = CATEGORY_LABEL[contentSlug];
+      (tagsByCategory[contentCat] || []).forEach(function (tag) {
+        pushUniqueTag(tagsByCategory.Platforms, tag);
+        var key = String(tag).toLowerCase();
+        if (!tagSet[key]) tagSet[key] = tag;
+      });
+    });
+  }
+
+  attachPlatformContentTrees();
+
   function cleanNode(node) {
     return {
       id: node.id,
@@ -283,4 +381,66 @@
   catalog.productTagsByCategory = tagsByCategory;
   catalog.productTaxonomyTree = productTaxonomyTree;
   catalog.productTaxonomyReady = true;
+  catalog.platformContentCategory = {};
+  Object.keys(PLATFORM_CONTENT).forEach(function (slug) {
+    var label = titleCase(slug);
+    catalog.platformContentCategory[label] = CATEGORY_LABEL[PLATFORM_CONTENT[slug]];
+    catalog.platformContentCategory[slug] = CATEGORY_LABEL[PLATFORM_CONTENT[slug]];
+  });
+  catalog.platformLabels = Object.keys(PLATFORM_CONTENT).map(titleCase);
+
+  function contentCategoryForItem(item) {
+    if (!item) return "";
+    if (item.contentCategory) return item.contentCategory;
+    var source = String(item.source || "").toLowerCase();
+    if (PLATFORM_CONTENT[source]) return CATEGORY_LABEL[PLATFORM_CONTENT[source]];
+    var stores = item.stores || [];
+    if (stores[0] && stores[0].id && PLATFORM_CONTENT[stores[0].id]) {
+      return CATEGORY_LABEL[PLATFORM_CONTENT[stores[0].id]];
+    }
+    return "";
+  }
+
+  catalog.contentCategoryForProduct = contentCategoryForItem;
+
+  function registerTag(category, tag) {
+    var label = String(tag || "").trim();
+    if (!label) return;
+    var key = label.toLowerCase();
+    var cat = category && tagsByCategory[category] ? category : "Platforms";
+    if (!tagSet[key]) {
+      tagSet[key] = label;
+      catalog.productTags = Object.keys(tagSet)
+        .sort()
+        .map(function (k) {
+          return tagSet[k];
+        });
+    }
+    if (tagsByCategory[cat].indexOf(tagSet[key]) < 0) {
+      tagsByCategory[cat].push(tagSet[key]);
+    }
+  }
+
+  catalog.mergeProductDiscoveryTags = function (items) {
+    (items || []).forEach(function (item) {
+      if (!item) return;
+      var cat = item.category || "Platforms";
+      if (categories.indexOf(cat) < 0) cat = "Platforms";
+      var contentCat = contentCategoryForItem(item);
+      if (contentCat && !item.contentCategory) item.contentCategory = contentCat;
+      registerTag(cat, item.category);
+      if (contentCat && contentCat !== cat) {
+        registerTag(contentCat, contentCat);
+      }
+      (item.tags || []).forEach(function (tag) {
+        String(tag)
+          .split(/\s*›\s*/)
+          .forEach(function (part) {
+            var trimmed = part.trim();
+            registerTag(cat, trimmed);
+            if (contentCat && contentCat !== cat) registerTag(contentCat, trimmed);
+          });
+      });
+    });
+  };
 })();

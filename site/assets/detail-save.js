@@ -135,7 +135,7 @@
     var total = displayedSaveCount(url);
     countEl.textContent = formatSaveCount(total);
     countEl.setAttribute(
-      "title",
+      "data-tooltip",
       total === 1 ? "1 save" : total + " saves"
     );
     countEl.setAttribute(
@@ -176,7 +176,7 @@
     if (!isNaN(baseAttr) && baseAttr >= 0) saveCountBase = baseAttr;
     btn.classList.toggle("is-saved", on);
     btn.setAttribute("aria-pressed", on ? "true" : "false");
-    btn.setAttribute("title", on ? "Saved" : "Save");
+    btn.setAttribute("data-tooltip", on ? "Saved" : "Save");
     btn.setAttribute("aria-label", on ? "Saved" : "Save");
     btn.removeAttribute("disabled");
     syncSaveCount(btn);

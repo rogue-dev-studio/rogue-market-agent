@@ -74,13 +74,25 @@
   function pillsHtml(item) {
     var root = (window.RogueSite && RogueSite.root && RogueSite.root()) || "../../";
     var parts = [];
-    parts.push('<span class="price-pill" title="Price">' + esc(priceLabel(item)) + "</span>");
+    parts.push('<span class="price-pill" data-tooltip="Price">' + esc(priceLabel(item)) + "</span>");
     if (item.category) {
       parts.push(
         '<a class="pill pill-link" href="' +
           esc(root + "products/search/?category=" + encodeURIComponent(item.category)) +
           '">' +
           esc(item.category) +
+          "</a>"
+      );
+    }
+    if (
+      item.contentCategory &&
+      String(item.contentCategory).toLowerCase() !== String(item.category || "").toLowerCase()
+    ) {
+      parts.push(
+        '<a class="pill pill-link" href="' +
+          esc(root + "products/search/?category=" + encodeURIComponent(item.contentCategory)) +
+          '">' +
+          esc(item.contentCategory) +
           "</a>"
       );
     }
@@ -119,6 +131,16 @@
       return { name: sfName, handle: sfHandle, url: sfUrl };
     }
 
+    if (item && item.source === "shutterstock") {
+      return {
+        name: item.authorName || "Rogue Developer Studio",
+        handle: item.author || "ArisHadisopiyan",
+        url:
+          item.authorUrl ||
+          "https://www.shutterstock.com/g/ArisHadisopiyan"
+      };
+    }
+
     var handle = item.author || item.owner || "rogue-dev-studio";
     var name = item.authorName || item.displayName || "";
     var url = item.authorUrl || "";
@@ -149,6 +171,10 @@
               (window.RogueCatalog && RogueCatalog.studioStores && RogueCatalog.studioStores.sketchfab) ||
               u.origin + "/";
           }
+        } else if (/(^|\.)shutterstock\.com$/i.test(u.hostname)) {
+          handle = item.author || "ArisHadisopiyan";
+          name = item.authorName || "Rogue Developer Studio";
+          url = "https://www.shutterstock.com/g/ArisHadisopiyan";
         } else {
           url = u.origin + "/";
         }
@@ -278,6 +304,7 @@
       sketchfabEngagementStat(ICON_VIEWS, views, "Views") +
       sketchfabEngagementStat(ICON_COMMENTS, comments, "Comments") +
       sketchfabEngagementStat(ICON_STAR, likes, "Likes");
+    host.setAttribute("aria-label", "Model stats");
     host.hidden = false;
     if (ratingEl) ratingEl.hidden = true;
     return true;
@@ -296,6 +323,20 @@
     } catch (err) {
       return String(raw).slice(0, 10);
     }
+  }
+
+  function stockAboutRows(item) {
+    if (!(item && item.source === "shutterstock")) return "";
+    var parts = [];
+    function row(label, valueHtml) {
+      if (!valueHtml) return;
+      parts.push("<dt>" + esc(label) + "</dt><dd>" + valueHtml + "</dd>");
+    }
+    var published = formatPublished(item.addedAt || item.publishedAt);
+    if (published) row("Published", esc(published));
+    if (item.collection) row("Collection", esc(String(item.collection)));
+    if (item.kind) row("Type", esc(String(item.kind)));
+    return parts.join("");
   }
 
   function sketchfabAboutRows(item) {
@@ -360,6 +401,7 @@
       esc(formatFileSize(item.sizeKb, item.sizeBytes)) +
       "</dd>" +
       sketchfabAboutRows(item) +
+      stockAboutRows(item) +
       "</dl>"
     );
   }
@@ -785,7 +827,7 @@
       var buy = document.querySelector("[data-detail-buy]");
       if (buy) {
         buy.href = buyUrl || "#";
-        buy.setAttribute("title", "Download");
+        buy.setAttribute("data-tooltip", "Download");
         buy.setAttribute("aria-label", "Download");
       }
     }

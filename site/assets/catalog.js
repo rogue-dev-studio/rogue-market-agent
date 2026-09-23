@@ -169,23 +169,82 @@
   function parseScopedTag(value) {
     var raw = String(value || "");
     var idx = raw.indexOf("::");
-    if (idx === -1) return { category: "", label: raw };
+    if (idx === -1) return { category: "", platform: "", label: raw };
+    var category = raw.slice(0, idx);
+    var rest = raw.slice(idx + 2);
+    var sep = rest.indexOf("›");
+    if (sep === -1) return { category: category, platform: "", label: rest };
     return {
-      category: raw.slice(0, idx),
-      label: raw.slice(idx + 2)
+      category: category,
+      platform: rest.slice(0, sep),
+      label: rest.slice(sep + 1)
     };
   }
 
-  function scopeTagKey(categoryLabel, label) {
+  function scopeTagKey(categoryLabel, label, platformLabel) {
     var tag = String(label || "").trim();
     if (!tag) return "";
     var cat = String(categoryLabel || "").trim();
+    var platform = String(platformLabel || "").trim();
+    if (platform && tag.toLowerCase() !== platform.toLowerCase()) {
+      return cat ? cat + "::" + platform + "›" + tag : platform + "›" + tag;
+    }
     return cat ? cat + "::" + tag : tag;
   }
 
-  function isTagSelected(name, categoryLabel) {
+  function isPlatformLabel(name) {
     var key = String(name || "").toLowerCase();
     if (!key) return false;
+    var list =
+      (window.RogueCatalog && RogueCatalog.platformLabels) || [
+        "Shutterstock",
+        "Sketchfab",
+        "Gumroad",
+        "TurboSquid",
+        "CGTrader",
+        "itch.io",
+        "Adobe Stock",
+        "Unity",
+        "Fab"
+      ];
+    return list.some(function (label) {
+      return String(label).toLowerCase() === key;
+    });
+  }
+
+  function itemMatchesCategory(item, categoryName) {
+    var key = String(categoryName || "").toLowerCase();
+    if (!key || !item) return false;
+    if (String(item.category || "").toLowerCase() === key) return true;
+    if (String(item.contentCategory || "").toLowerCase() === key) return true;
+    if (
+      window.RogueCatalog &&
+      typeof RogueCatalog.contentCategoryForProduct === "function" &&
+      String(RogueCatalog.contentCategoryForProduct(item) || "").toLowerCase() === key
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  function itemHasTag(item, name) {
+    var key = String(name || "").toLowerCase();
+    if (!key) return false;
+    return itemTags(item).some(function (tag) {
+      return String(tag).toLowerCase() === key;
+    });
+  }
+
+  function isTagSelected(name, categoryLabel, platformLabel) {
+    var key = String(name || "").toLowerCase();
+    if (!key) return false;
+    var platform = String(platformLabel || "").trim();
+    if (categoryLabel && platform && key !== platform.toLowerCase()) {
+      var compound = String(categoryLabel).toLowerCase() + "::" + platform.toLowerCase() + "›" + key;
+      return state.tags.some(function (t) {
+        return t.toLowerCase() === compound;
+      });
+    }
     if (categoryLabel) {
       var scoped = String(categoryLabel).toLowerCase() + "::" + key;
       return state.tags.some(function (t) {
@@ -457,22 +516,22 @@
         var catOk =
           hasCategoryFilter() &&
           state.categories.some(function (c) {
-            return item.category.toLowerCase() === c.toLowerCase();
+            return itemMatchesCategory(item, c);
           });
         var tagOk =
           hasTagFilter() &&
-          itemTags(item).some(function (tag) {
-            var tagKey = tag.toLowerCase();
-            return state.tags.some(function (t) {
-              var parsed = parseScopedTag(t);
-              if (parsed.category) {
-                if (item.category.toLowerCase() !== parsed.category.toLowerCase()) {
-                  return false;
-                }
-                return tagKey === parsed.label.toLowerCase();
-              }
-              return tagKey === t.toLowerCase();
-            });
+          state.tags.some(function (t) {
+            var parsed = parseScopedTag(t);
+            if (parsed.category && !itemMatchesCategory(item, parsed.category)) {
+              return false;
+            }
+            if (parsed.platform) {
+              return itemHasTag(item, parsed.platform) && itemHasTag(item, parsed.label);
+            }
+            if (parsed.category) {
+              return itemHasTag(item, parsed.label);
+            }
+            return itemHasTag(item, t);
           });
         return catOk || tagOk;
       });
@@ -710,7 +769,7 @@
 
   function countForCategory(name) {
     return items.filter(function (item) {
-      return item.category.toLowerCase() === name.toLowerCase();
+      return itemMatchesCategory(item, name);
     }).length;
   }
 
@@ -777,6 +836,7 @@
       audio: iconSvg('<path d="M4 10v4"></path><path d="M8 7v10"></path><path d="M12 4v16"></path><path d="M16 7v10"></path><path d="M20 10v4"></path>'),
       tools: iconSvg('<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-3-3 2.5-2.5z"></path>'),
       vfx: iconSvg('<path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path><path d="M18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8L18 15z"></path>'),
+      platforms: iconSvg('<rect x="4" y="5" width="16" height="14" rx="2"></rect><path d="M8 10h8M8 14h5"></path><circle cx="17" cy="14" r="1.2"></circle>'),
       other: iconSvg('<circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l2.5 2.5"></path>'),
       official: iconSvg('<path d="M12 3l2 5h5l-4 3.5 1.5 5.5L12 14l-4.5 3 1.5-5.5L5 8h5z"></path>')
     };
@@ -1067,17 +1127,19 @@
     return kindTreeCache.slice();
   }
 
-  function countForNode(node, categoryLabel) {
+  function countForNode(node, categoryLabel, platformLabel) {
     if (!node) return 0;
+    var platform = String(platformLabel || "").trim();
     if (!node.children || !node.children.length) {
       if (categoryLabel) {
         return items.filter(function (item) {
-          return (
-            item.category.toLowerCase() === categoryLabel.toLowerCase() &&
-            itemTags(item).some(function (tag) {
-              return tag.toLowerCase() === node.label.toLowerCase();
-            })
-          );
+          if (!itemMatchesCategory(item, categoryLabel)) return false;
+          if (platform) {
+            if (!itemHasTag(item, platform)) return false;
+            if (node.label.toLowerCase() === platform.toLowerCase()) return true;
+            return itemHasTag(item, node.label);
+          }
+          return itemHasTag(item, node.label);
         }).length;
       }
       return countForTag(node.label);
@@ -1086,7 +1148,7 @@
     if (kind !== "products") {
       var labels = collectNodeLabels(node);
       return items.filter(function (item) {
-        if (item.category.toLowerCase() !== categoryLabel.toLowerCase()) return false;
+        if (!itemMatchesCategory(item, categoryLabel)) return false;
         return itemTags(item).some(function (tag) {
           return labels.some(function (label) {
             return tag.toLowerCase() === label.toLowerCase();
@@ -1094,22 +1156,25 @@
         });
       }).length;
     }
+    if (platform && node.label.toLowerCase() === platform.toLowerCase()) {
+      return items.filter(function (item) {
+        return itemMatchesCategory(item, categoryLabel) && itemHasTag(item, platform);
+      }).length;
+    }
     return items.filter(function (item) {
-      return (
-        item.category.toLowerCase() === categoryLabel.toLowerCase() &&
-        itemTags(item).some(function (tag) {
-          return tag.toLowerCase() === node.label.toLowerCase();
-        })
-      );
+      if (!itemMatchesCategory(item, categoryLabel)) return false;
+      if (platform && !itemHasTag(item, platform)) return false;
+      return itemHasTag(item, node.label);
     }).length;
   }
 
-  function isNodeChecked(node, categoryLabel, depth) {
-    return nodeCheckState(node, categoryLabel, depth) === "checked";
+  function isNodeChecked(node, categoryLabel, depth, platformLabel) {
+    return nodeCheckState(node, categoryLabel, depth, platformLabel) === "checked";
   }
 
-  function nodeCheckState(node, categoryLabel, depth) {
+  function nodeCheckState(node, categoryLabel, depth, platformLabel) {
     if (!node) return "unchecked";
+    var platform = String(platformLabel || "").trim();
     if (depth === 0) {
       if (isCategorySelected(node.label)) return "checked";
       var rootLabels = collectDescendantLabels(node);
@@ -1123,15 +1188,46 @@
       return "indeterminate";
     }
     if (categoryLabel && isCategorySelected(categoryLabel)) return "checked";
-    var kids = node.children || [];
-    if (kids.length) {
-      var labels = collectNodeLabels(node);
-      var hit = 0;
-      labels.forEach(function (label) {
-        if (isTagSelected(label, categoryLabel)) hit += 1;
+    if (
+      kind === "products" &&
+      categoryLabel === "Platforms" &&
+      platform &&
+      node.label.toLowerCase() === platform.toLowerCase()
+    ) {
+      return isTagSelected(platform, categoryLabel) ? "checked" : "unchecked";
+    }
+    if (kind === "products" && categoryLabel === "Platforms" && platform) {
+      var scopedKey = scopeTagKey(categoryLabel, node.label, platform);
+      var kids = node.children || [];
+      if (kids.length) {
+        var labels = collectNodeLabels(node);
+        var hit = 0;
+        labels.forEach(function (label) {
+          if (label.toLowerCase() === platform.toLowerCase()) {
+            if (isTagSelected(platform, categoryLabel)) hit += 1;
+          } else if (isTagSelected(label, categoryLabel, platform)) {
+            hit += 1;
+          }
+        });
+        if (hit === 0) return "unchecked";
+        if (hit === labels.length) return "checked";
+        return "indeterminate";
+      }
+      return state.tags.some(function (t) {
+        return t.toLowerCase() === scopedKey.toLowerCase();
+      })
+        ? "checked"
+        : "unchecked";
+    }
+    var childNodes = node.children || [];
+    if (childNodes.length) {
+      var nodeLabels = collectNodeLabels(node);
+      var hits = 0;
+      nodeLabels.forEach(function (label) {
+        if (isTagSelected(label, categoryLabel)) hits += 1;
       });
-      if (hit === 0) return "unchecked";
-      if (hit === labels.length) return "checked";
+      if (hits === 0) return "unchecked";
+      if (hits === nodeLabels.length) return "checked";
       return "indeterminate";
     }
     return isTagSelected(node.label, categoryLabel) ? "checked" : "unchecked";
@@ -1166,13 +1262,18 @@
     });
   }
 
-  function renderTreeNode(node, depth, categoryLabel) {
+  function renderTreeNode(node, depth, categoryLabel, platformLabel) {
     var children = node.children || [];
     var hasChildren = children.length > 0;
     var expanded = !!expandedNodes[node.id];
     var catLabel = depth === 0 ? node.label : categoryLabel;
-    var count = countForNode(node, depth === 0 ? "" : catLabel);
-    var checkState = nodeCheckState(node, catLabel, depth);
+    var platform =
+      platformLabel ||
+      (depth === 1 && catLabel === "Platforms" && isPlatformLabel(node.label)
+        ? node.label
+        : "");
+    var count = countForNode(node, depth === 0 ? "" : catLabel, platform);
+    var checkState = nodeCheckState(node, catLabel, depth, platform);
     var checked = checkState === "checked";
     var indeterminate = checkState === "indeterminate";
     var labelText = node.displayLabel || node.label;
@@ -1216,6 +1317,8 @@
       depth +
       '" data-category="' +
       escAttr(catLabel) +
+      '" data-platform="' +
+      escAttr(platform) +
       '" data-tag="' +
       escAttr(depth === 0 ? "" : node.label) +
       '"' +
@@ -1245,7 +1348,7 @@
         '">' +
         children
           .map(function (child) {
-            return renderTreeNode(child, depth + 1, catLabel);
+            return renderTreeNode(child, depth + 1, catLabel, platform);
           })
           .join("") +
         "</div>";
@@ -1337,10 +1440,25 @@
     return labels;
   }
 
-  function applyLabelsToTags(labels, on, categoryLabel) {
+  function applyLabelsToTags(labels, on, categoryLabel, platformLabel) {
     (labels || []).forEach(function (label) {
       if (!label) return;
-      state.tags = toggleListValue(state.tags, scopeTagKey(categoryLabel, label), on);
+      state.tags = toggleListValue(
+        state.tags,
+        scopeTagKey(categoryLabel, label, platformLabel),
+        on
+      );
+    });
+  }
+
+  function clearPlatformContentTags(categoryLabel, platformLabel) {
+    var prefix =
+      String(categoryLabel || "").toLowerCase() +
+      "::" +
+      String(platformLabel || "").toLowerCase() +
+      "›";
+    state.tags = state.tags.filter(function (t) {
+      return t.toLowerCase().indexOf(prefix) !== 0;
     });
   }
 
@@ -1399,17 +1517,45 @@
 
       var nodeId = (input.getAttribute("data-node-id") || "").trim();
       var category = (input.getAttribute("data-category") || "").trim();
+      var platform = (input.getAttribute("data-platform") || "").trim();
       var tag = (input.getAttribute("data-tag") || "").trim();
       var depth = parseInt(input.getAttribute("data-depth") || "0", 10) || 0;
       var on = !!input.checked;
       var node = findNodeById(taxonomyTree(), nodeId);
       var catLabel = category || (depth === 0 && node ? node.label : "") || "";
       var hasKids = !!(node && node.children && node.children.length);
+      var isPlatformBranch =
+        catLabel === "Platforms" && platform && isPlatformLabel(platform);
 
       if (depth === 0) {
         var rootName = catLabel || (node && node.label) || "";
         state.categories = toggleListValue(state.categories, rootName, on);
         if (node) applyLabelsToTags(collectDescendantLabels(node), false, rootName);
+      } else if (isPlatformBranch && depth === 1 && isPlatformLabel(tag || (node && node.label))) {
+        var platformName = tag || (node && node.label) || platform;
+        state.tags = toggleListValue(state.tags, scopeTagKey(catLabel, platformName), on);
+        if (!on) clearPlatformContentTags(catLabel, platformName);
+      } else if (isPlatformBranch) {
+        if (!on && isCategorySelected(catLabel)) {
+          explodeCategoryToTags(catLabel, "");
+        }
+        var contentLabel = tag || (node && node.label) || "";
+        if (hasKids) {
+          collectNodeLabels(node).forEach(function (label) {
+            if (label.toLowerCase() === platform.toLowerCase()) return;
+            state.tags = toggleListValue(
+              state.tags,
+              scopeTagKey(catLabel, label, platform),
+              on
+            );
+          });
+        } else {
+          state.tags = toggleListValue(
+            state.tags,
+            scopeTagKey(catLabel, contentLabel, platform),
+            on
+          );
+        }
       } else if (hasKids) {
         if (!on && isCategorySelected(catLabel)) {
           explodeCategoryToTags(catLabel, "");

@@ -62,8 +62,9 @@
       name: "Night Drive \u2014 Car Near Mountains",
       description:
         "Flat night-drive motion pack: 1080p MP4 (12s) plus editable Remotion (React) source. Parallax mountains, pines, dashed road, rolling car.",
-      category: "2D",
-      tags: ["Environments", "Textures & Materials", "Sky", "Nature"],
+      category: "Platforms",
+      contentCategory: "2D",
+      tags: ["Gumroad", "Environments", "Textures & Materials", "Sky", "Nature"],
       badge: "MP4",
       price: 0,
       priceSuggested: 12,
@@ -82,6 +83,7 @@
       votes: 0,
       license: "Single Entity",
       sizeBytes: 2380914,
+      source: "gumroad",
       includes: [
         "car-near-mountains.mp4 \u2014 1920\u00d71080, 12s, 30fps",
         "Remotion (React) source project",
@@ -266,8 +268,8 @@
       id: "sf-a60eb60f01a146e892f2fdfe6d623f96",
       slug: "sf-money-coin-token-indonesia-a60eb60f",
       sketchfabUid: "a60eb60f01a146e892f2fdfe6d623f96",
-      name: "Money Coin Token Indonesia",
-      description: "Payment Token Indonesian",
+      name: "Indonesian Money Coin Token",
+      description: "Indonesian payment token coin — 3D model on Sketchfab by Rogue Development.",
       category: "3D",
       tags: ["Props", "Coin", "Money", "Coins", "Moneybank", "Moneystack"],
       badge: "3D",
@@ -459,7 +461,7 @@
       name: "Red Envelope",
       description: "Red Envelope - 3D model on Sketchfab by Rogue Development.",
       category: "3D",
-      tags: ["Clothing", "People", "Red", "Envelope", "Angpao"],
+      tags: ["Clothing", "People", "Red", "Envelope", "Hongbao"],
       badge: "3D",
       price: 0,
       rating: 0,
@@ -475,10 +477,10 @@
       id: "sf-a9e754d0fc944605bd7a134108635e42",
       slug: "sf-eid-ketupat-indonesian-traditional-a9e754d0",
       sketchfabUid: "a9e754d0fc944605bd7a134108635e42",
-      name: "Eid Ketupat, Indonesian traditional",
-      description: "Eid Ketupat, Indonesian traditional - 3D model on Sketchfab by Rogue Development.",
+      name: "Eid Ketupat — Indonesian Traditional Food",
+      description: "Eid ketupat (Indonesian woven rice dumpling) — 3D model on Sketchfab by Rogue Development.",
       category: "3D",
-      tags: ["Food", "Indonesian", "Eid", "Mubarak", "Indonesianculture", "Ketupat"],
+      tags: ["Food", "Indonesian", "Eid", "Mubarak", "Indonesian Culture", "Ketupat"],
       badge: "3D",
       price: 0,
       rating: 0,
@@ -497,7 +499,7 @@
       name: "Manequin Statue",
       description: "Manequin Statue - 3D model on Sketchfab by Rogue Development.",
       category: "3D",
-      tags: ["Characters", "Furniture", "Statue", "Statues", "Manequin", "Manekin"],
+      tags: ["Characters", "Furniture", "Statue", "Statues", "Mannequin"],
       badge: "3D",
       price: 0,
       rating: 0,
@@ -513,10 +515,10 @@
       id: "sf-306ae7314a214c62b0d441a96d47d3e9",
       slug: "sf-peci-cap-islam-306ae731",
       sketchfabUid: "306ae7314a214c62b0d441a96d47d3e9",
-      name: "Peci Cap Islam",
-      description: "Peci Cap Islam - 3D model on Sketchfab by Rogue Development.",
+      name: "Peci — Islamic Cap",
+      description: "Peci (Islamic songkok cap) — 3D model on Sketchfab by Rogue Development.",
       category: "3D",
-      tags: ["Props", "Clothing", "Islam", "Islamic", "Cap", "Peci"],
+      tags: ["Props", "Clothing", "Islam", "Islamic", "Cap", "Peci", "Songkok"],
       badge: "3D",
       price: 0,
       rating: 0,
@@ -665,8 +667,8 @@
       id: "sf-730f6d0a4fd64520911be0b50601172d",
       slug: "sf-ramadhan-kareem-730f6d0a",
       sketchfabUid: "730f6d0a4fd64520911be0b50601172d",
-      name: "Ramadhan Kareem",
-      description: "Ramadhan Kareem - 3D model on Sketchfab by Rogue Development.",
+      name: "Ramadan Kareem",
+      description: "Ramadan Kareem scene — 3D model on Sketchfab by Rogue Development.",
       category: "3D",
       tags: ["Environments", "Furniture", "Lamp", "Moon", "Moonlight", "Ramadan"],
       badge: "3D",
@@ -855,8 +857,8 @@
       id: "sf-20fe9358bc6e491fa4e5b67defabefb8",
       slug: "sf-traditional-musical-instrument-papua-indonesia-20fe9358",
       sketchfabUid: "20fe9358bc6e491fa4e5b67defabefb8",
-      name: "Traditional Musical Instrument Papua Indonesia",
-      description: "Traditional Musical Instrument Papua Indonesia - 3D model on Sketchfab by Rogue Development.",
+      name: "Traditional Papuan Musical Instrument",
+      description: "Traditional Papuan musical instrument (tifa) from Indonesia — 3D model on Sketchfab by Rogue Development.",
       category: "3D",
       tags: ["Music", "Indonesia", "Tifa", "Papua"],
       badge: "3D",
@@ -874,10 +876,10 @@
       id: "sf-b2bcdd8e684b49c59cdf82150b945979",
       slug: "sf-drum-ramadhan-kareem-b2bcdd8e",
       sketchfabUid: "b2bcdd8e684b49c59cdf82150b945979",
-      name: "Drum Ramadhan Kareem",
-      description: "Drum Ramadhan Kareem - 3D model on Sketchfab by Rogue Development.",
+      name: "Ramadan Kareem Drum",
+      description: "Ramadan Kareem drum — 3D model on Sketchfab by Rogue Development.",
       category: "3D",
-      tags: ["Drum", "Ramadan", "Ramadhan", "Kareem"],
+      tags: ["Drum", "Ramadan", "Kareem"],
       badge: "3D",
       price: 0,
       rating: 0,
@@ -902,8 +904,62 @@
     .concat(turbosquidSnapshot)
     .concat(cgtraderSnapshot)
     .concat(itchSnapshot);
+
+  var PLATFORM_LABEL = {
+    shutterstock: "Shutterstock",
+    turbosquid: "TurboSquid",
+    cgtrader: "CGTrader",
+    itch: "itch.io",
+    sketchfab: "Sketchfab",
+    gumroad: "Gumroad"
+  };
+
+  function uniqueTagList(list) {
+    var out = [];
+    var seen = {};
+    (list || []).forEach(function (tag) {
+      var t = String(tag || "").trim();
+      if (!t) return;
+      var k = t.toLowerCase();
+      if (seen[k]) return;
+      seen[k] = true;
+      out.push(t);
+    });
+    return out;
+  }
+
+  function resolvePlatformSource(p) {
+    if (!p) return "";
+    if (p.source) return String(p.source);
+    if (p.sketchfabUid) return "sketchfab";
+    if (p.gumroadUrl) return "gumroad";
+    if (p.stores && p.stores[0] && p.stores[0].id) return String(p.stores[0].id);
+    return "";
+  }
+
   catalog.products.forEach(function (p) {
-    if (!(p && (p.source === "sketchfab" || p.sketchfabUid))) return;
+    if (!p) return;
+    var source = resolvePlatformSource(p);
+    var platform = PLATFORM_LABEL[source];
+    if (platform) {
+      p.category = "Platforms";
+      p.source = source;
+      p.tags = uniqueTagList([platform].concat(p.tags || []));
+      if (!p.contentCategory) {
+        p.contentCategory =
+          (catalog.platformContentCategory &&
+            (catalog.platformContentCategory[platform] ||
+              catalog.platformContentCategory[source])) ||
+          (source === "sketchfab" ||
+          source === "turbosquid" ||
+          source === "cgtrader" ||
+          source === "unity" ||
+          source === "fab"
+            ? "3D"
+            : "2D");
+      }
+    }
+    if (!(p.source === "sketchfab" || p.sketchfabUid)) return;
     if (typeof p.likes !== "number") {
       p.likes = typeof p.ratingCount === "number" ? p.ratingCount : 0;
     }
@@ -914,6 +970,9 @@
     }
   });
   catalog.productsLoaded = true;
+  if (catalog.mergeProductDiscoveryTags) {
+    catalog.mergeProductDiscoveryTags(catalog.products || []);
+  }
   try {
     document.dispatchEvent(new CustomEvent("rogue-catalog:products-loaded"));
   } catch (err) {}
