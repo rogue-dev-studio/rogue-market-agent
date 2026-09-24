@@ -1,6 +1,6 @@
-# Marketplaces (digital products)
+# Marketplaces (assets)
 
-Rogue Assets Store lists your assets; buyers complete purchase on the external store.
+Rogue Asset Store lists your assets; buyers complete purchase on the external store.
 
 ## Supported store ids
 
@@ -35,16 +35,16 @@ From [rogue-dev-studio.github.io](https://rogue-dev-studio.github.io/) → **Tok
 
 ## Catalog contents (real listings only)
 
-| Source | What appears in Market |
+| Source | What appears in Rogue Asset Store |
 |--------|-------------------------|
-| Gumroad | Individual SKUs in `catalog-products.js` (e.g. Night Drive) |
-| Sketchfab | Public models for `@rogue-dev-studio` (snapshot + live `catalog-products-sketchfab.js`) |
+| Gumroad | Individual SKUs in `catalog-assets.js` (e.g. Night Drive) |
+| Sketchfab | Public models for `@rogue-dev-studio` (snapshot + live `catalog-assets-sketchfab.js`) |
 | Shutterstock | `stock/catalog.json` items + optional local snapshot (`source: shutterstock`) |
 | TurboSquid | `turbosquid/catalog.json` items + optional local snapshot |
 | CGTrader | `cgtrader/catalog.json` items + optional local snapshot |
 | itch.io | `itch/catalog.json` items + optional local snapshot |
 
-Live feeds are loaded by `site/assets/catalog-products-stores.js` from `https://rogue-dev-studio.github.io/{path}/catalog.json`.
+Live feeds are loaded by `site/asset-store/catalog-asset-stores.js` from `https://rogue-dev-studio.github.io/{path}/catalog.json`.
 
 Do **not** add profile pages as product cards. Each `items[]` row needs a **per-asset** `url` and `title` (thumb recommended).
 
@@ -65,7 +65,7 @@ Do **not** add profile pages as product cards. Each `items[]` row needs a **per-
 }
 ```
 
-## Catalog entry (`site/assets/catalog-products.js`)
+## Catalog entry (`site/asset-store/catalog-assets.js`)
 
 Prefer `stores[]`. Mark one `primary: true` for Save / default Get.
 
@@ -82,6 +82,6 @@ Legacy single fields still map in: `gumroadUrl`, `sketchfabUrl`, `shutterstockUr
 
 ## UI
 
-- Detail hero: one Get icon button per store (`product-stores.js`)
+- Detail hero: one Get icon button per store (`asset-stores.js`)
 - About: **Available on** with store name links
 - Never commit API tokens — public product URLs only

@@ -1,4 +1,4 @@
-# Deploy Rogue Market Agent site to GitHub Pages
+# Deploy Rogue Asset Store site to GitHub Pages
 name: Deploy Pages
 
 on:

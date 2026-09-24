@@ -1,16 +1,16 @@
 <!--
   @Author: rogue-dev-studio
-  @Date: 2026-09-20 11:34:00
+  @Date: 2026-09-22 12:30:00
   @Last Modified by: rogue-dev-studio
-  @Last Modified time: 2026-09-20 11:34:00
+  @Last Modified time: 2026-09-22 13:26:00
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Agent Skill Tags - Rogue Asset Store</title>
-  <meta name="description" content="Explore Agent Skills organized by tag. Empty tags stay listed until data is added." />
+  <title>Asset Tags - Rogue Asset Store</title>
+  <meta name="description" content="Browse asset tags by subcategory." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -19,24 +19,23 @@
 <body data-base="../../">
   <div class="page">
     <header class="top" data-site-nav></header>
-
-    <section class="list-hero">
-      <p class="breadcrumb"><a href="../../">Home</a> <span>/</span> <a href="../../skills/">Agent Skills</a> <span>/</span> <span aria-current="page">Tags</span></p>
-      <p class="eyebrow">Agent Skills</p>
-      <h1>Browse by Tag</h1>
-      <p class="lede">Explore Agent Skills organized by tag. Empty tags stay listed until data is added.</p>
+    <section class="browse-hero">
+      <p class="breadcrumb"><a href="../../">Home</a> <span>/</span> <a href="../../assets/">Assets</a> <span>/</span> <span aria-current="page">Tags</span></p>
+      <h1>Asset Tags</h1>
+      <p class="lede">Individual subcategory tags for assets, separate from Skills and MCP.</p>
     </section>
-
-    <section class="catalog" data-catalog="skills" data-mode="tags">
+    <section class="catalog" data-catalog="assets" data-mode="tags">
       <div data-catalog-tags-grid></div>
     </section>
-
     <footer class="foot"></footer>
   </div>
   <script src="../../asset-store/catalog-data.js" defer></script>
   <script src="../../asset-store/catalog-cards.js" defer></script>
+  <script src="../../asset-store/catalog-asset-taxonomy.js" defer></script>
+  <script src="../../asset-store/catalog-assets.js" defer></script>
+  <script src="../../asset-store/catalog-assets-sketchfab.js" defer></script>
+  <script src="../../asset-store/catalog-asset-stores.js" defer></script>
   <script src="../../asset-store/site-root.js" defer></script>
-  <script src="../../asset-store/catalog-github.js" defer></script>
   <script src="../../asset-store/nav.js" defer></script>
   <script src="../../asset-store/catalog.js" defer></script>
 </body>

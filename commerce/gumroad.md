@@ -1,19 +1,19 @@
-# Paid products on Rogue Market (Gumroad)
+# Paid assets on Rogue Asset Store (Gumroad)
 
 > Gumroad is one storefront among several. See [marketplaces.md](marketplaces.md) for Sketchfab, Shutterstock, and others.
 
 Status: **foundation live in repo**  
 Checkout: **Gumroad** ([roguedevstudio.gumroad.com](https://roguedevstudio.gumroad.com)) (and/or other stores via `stores[]`)  
-Storefront discovery: [Rogue Market Agent](https://rogue-dev-studio.github.io/rogue-market-agent/)
+Storefront discovery: [Rogue Asset Store](https://rogue-dev-studio.github.io/rogue-asset-store/)
 
 ## Goal
 
-Sell selected digital packages (skills / MCP / media kits) as **paid** while keeping free/open listings. Gumroad handles payment + delivery; Market stays the catalog/discovery layer.
+Sell selected digital packages (skills / MCP / media kits) as **paid** while keeping free/open listings. Gumroad handles payment + delivery; Rogue Asset Store stays the catalog/discovery layer.
 
 ## Architecture (MVP — no API gateway)
 
 ```text
-Buyer → Market detail page → "Buy on Gumroad" → Gumroad checkout
+Buyer → Store detail page → "Buy on Gumroad" → Gumroad checkout
                               → Gumroad delivers file / license mail
 Optional later:
 Gumroad webhook → tiny Vercel/GitHub Action → mark license / email receipt
@@ -41,7 +41,7 @@ Do **not** commit Gumroad access token / webhook secret.
 |-----|-------|---------|-------|
 | `night-drive-car-mountains` | Night Drive — Car Near Mountains | https://roguedevstudio.gumroad.com/l/hppwla | Motion pack MP4 + Remotion; launch PWYW $0+ |
 
-## Market UI (next)
+## Store UI (next)
 
 1. Read `COMMERCE.json` from GitHub raw on detail pages.
 2. `paid` / priced → CTA **Buy on Gumroad**.
@@ -51,7 +51,7 @@ Do **not** commit Gumroad access token / webhook secret.
 ## Security / legal
 
 - Gumroad ToS + license text on the product.
-- No secrets in market packages or GH Pages.
+- No secrets in store packages or GH Pages.
 - Keep Rogue Development attribution on open teasers.
 
 ## Rollout checklist
@@ -59,11 +59,11 @@ Do **not** commit Gumroad access token / webhook secret.
 - [x] Choose Gumroad (no API gateway)
 - [x] Pilot product Night Drive (`hppwla`)
 - [x] Commerce convention + template in this repo
-- [ ] Market detail CTA for Gumroad links
+- [ ] Store detail CTA for Gumroad links
 - [ ] Catalog Paid/Free badge
 - [ ] (Optional) webhook automation
 
 ## Decision log
 
-- **2026-09-21** — Use existing Gumroad; Market = discovery; no API gateway for paid MVP.
+- **2026-09-21** — Use existing Gumroad; Store = discovery; no API gateway for paid MVP.
 - **2026-09-22** — Pilot SKU Night Drive live on Gumroad; commerce docs committed under `commerce/`.

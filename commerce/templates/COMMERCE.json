@@ -37,5 +37,5 @@
   },
   "includes": [],
   "freeTeaser": true,
-  "_comment": "Copy into a market package root when that SKU goes paid. Never put API tokens here. Supported store ids: gumroad, sketchfab, shutterstock, adobe-stock, turbosquid, cgtrader, itch, unity, fab, other."
+  "_comment": "Copy into a store package root when that SKU goes paid. Never put API tokens here. Supported store ids: gumroad, sketchfab, shutterstock, adobe-stock, turbosquid, cgtrader, itch, unity, fab, other."
 }

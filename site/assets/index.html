@@ -1,16 +1,16 @@
 <!--
   @Author: rogue-dev-studio
-  @Date: 2026-09-20 10:46:47
+  @Date: 2026-09-22 12:30:00
   @Last Modified by: rogue-dev-studio
-  @Last Modified time: 2026-09-22 16:10:00
+  @Last Modified time: 2026-09-22 15:35:00
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>All MCP Servers - Rogue Asset Store</title>
-  <meta name="description" content="Explore our complete collection of MCP servers to connect AI to your favorite tools." />
+  <title>All Assets - Rogue Asset Store</title>
+  <meta name="description" content="Digital downloads from Rogue Development — motion packs, assets, and more." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -25,9 +25,9 @@
         <div class="filter-block">
           <h2 class="filter-heading">Catalog</h2>
           <div class="kind-tabs kind-tabs-stack" role="tablist" aria-label="Catalog kind">
-            <a class="kind-tab is-active" href="../servers/" aria-current="page">MCP Servers</a>
+            <a class="kind-tab" href="../servers/">MCP Servers</a>
             <a class="kind-tab" href="../skills/">Agent Skills</a>
-            <a class="kind-tab" href="../assets/">Assets</a>
+            <a class="kind-tab is-active" href="../assets/" aria-current="page">Assets</a>
           </div>
         </div>
         <div class="filter-block filter-block-categories">
@@ -38,7 +38,7 @@
 
       <div class="browse-content">
         <section class="browse-hero browse-hero-compact">
-          <p class="breadcrumb"><a href="../">Home</a> <span>/</span> <a href="../servers/">MCP Servers</a> <span>/</span> <span aria-current="page">All</span></p>
+          <p class="breadcrumb"><a href="../">Home</a> <span>/</span> <a href="../assets/">Assets</a> <span>/</span> <span aria-current="page">All</span></p>
           <div class="browse-facet-row" data-browse-facets></div>
           <div class="search-bar search-bar-lg">
             <span class="search-icon" aria-hidden="true">
@@ -48,11 +48,11 @@
               </svg>
             </span>
             <label class="sr-only" for="catalog-q">Search</label>
-            <input id="catalog-q" type="search" data-catalog-search placeholder="Search for MCP servers..." autocomplete="off" />
+            <input id="catalog-q" type="search" data-catalog-search placeholder="Search assets..." autocomplete="off" />
           </div>
         </section>
 
-        <section class="catalog browse-main" data-catalog="servers" data-mode="all" data-filter-style="sidebar">
+        <section class="catalog browse-main" data-catalog="assets" data-mode="all" data-filter-style="sidebar">
           <ul class="skill-list catalog-grid" data-catalog-list></ul>
           <div class="pager" data-catalog-pager></div>
         </section>
@@ -63,11 +63,12 @@
   </div>
   <script src="../asset-store/catalog-data.js" defer></script>
   <script src="../asset-store/catalog-cards.js" defer></script>
+  <script src="../asset-store/catalog-asset-taxonomy.js?v=20260924f" defer></script>
+  <script src="../asset-store/catalog-assets.js" defer></script>
+  <script src="../asset-store/catalog-assets-sketchfab.js" defer></script>
+  <script src="../asset-store/catalog-asset-stores.js?v=20260924f" defer></script>
   <script src="../asset-store/site-root.js" defer></script>
-  <script src="../asset-store/catalog-github.js" defer></script>
   <script src="../asset-store/nav.js" defer></script>
-  <script src="../asset-store/catalog.js" defer></script>
-  <script src="../asset-store/github-stars.js" defer></script>
-  <script src="../asset-store/github-authors.js" defer></script>
+  <script src="../asset-store/catalog.js?v=20260924f" defer></script>
 </body>
 </html>
