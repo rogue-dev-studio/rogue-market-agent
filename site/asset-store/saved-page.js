@@ -67,8 +67,11 @@
     if (!mount) return;
     var list = readBookmarks();
     if (!list.length) {
-      mount.innerHTML =
-        '<li class="empty-state">No saved links yet. Open a product, skill, or MCP detail and tap Save.</li>';
+      var empty =
+        window.RogueStoreI18n && RogueStoreI18n.t
+          ? RogueStoreI18n.t("noSaved")
+          : "No saved links yet. Open a product, skill, or MCP detail and tap Save.";
+      mount.innerHTML = '<li class="empty-state">' + empty + "</li>";
       return;
     }
     mount.innerHTML = list
@@ -111,4 +114,6 @@
   } else {
     render();
   }
+
+  window.addEventListener("site-lang-change", render);
 })();

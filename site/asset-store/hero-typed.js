@@ -5,20 +5,42 @@
  * @Last Modified time: 2026-09-22 22:41:00
  */
 (function () {
-  var SLIDES = [
-    {
-      title: "MCP Servers",
-      lede: "Connect tools and apps to your AI agent — ready for Cursor, Claude Code, and other hosts."
-    },
-    {
-      title: "Agent Skills",
-      lede: "Installable agent playbooks and workflows for Cursor, Claude Code, OpenCode, and more."
-    },
-    {
-      title: "Assets",
-      lede: "Motion packs, 3D models, and stock downloads from studio storefronts."
-    }
-  ];
+  function t(key, fallback) {
+    if (window.RogueStoreI18n && RogueStoreI18n.t) return RogueStoreI18n.t(key);
+    return fallback;
+  }
+
+  var SLIDES = [];
+
+  function refreshSlides() {
+    var next = [
+      {
+        title: t("heroMcpTitle", "MCP Servers"),
+        lede: t(
+          "heroMcpLede",
+          "Connect tools and apps to your AI agent — ready for Cursor, Claude Code, and other hosts."
+        )
+      },
+      {
+        title: t("heroSkillsTitle", "Agent Skills"),
+        lede: t(
+          "heroSkillsLede",
+          "Installable agent playbooks and workflows for Cursor, Claude Code, OpenCode, and more."
+        )
+      },
+      {
+        title: t("heroAssetsTitle", "Assets"),
+        lede: t(
+          "heroAssetsLede",
+          "Motion packs, 3D models, and stock downloads from studio storefronts."
+        )
+      }
+    ];
+    SLIDES.length = 0;
+    for (var i = 0; i < next.length; i++) SLIDES.push(next[i]);
+  }
+
+  refreshSlides();
   var TYPE_MS = 72;
   var DELETE_MS = 48;
   var HOLD_MS = 3200;
@@ -140,6 +162,11 @@
     });
 
     setLede(ledeEl, SLIDES[0].lede);
+
+    window.addEventListener("site-lang-change", function () {
+      refreshSlides();
+      if (ledeEl) setLede(ledeEl, SLIDES[index % SLIDES.length].lede);
+    });
 
     if (prefersReducedMotion()) {
       setText(SLIDES[0].title);

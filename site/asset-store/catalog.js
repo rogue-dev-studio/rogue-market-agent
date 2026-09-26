@@ -593,13 +593,21 @@
   }
 
   function emptyMessage() {
-    if (hasActiveFilters()) return "No results found.";
-    if (kind === "assets") {
-      if (!RogueCatalog.assetsLoaded && !(RogueCatalog.assets || []).length) return "Loading…";
-      return "No assets yet.";
+    function tx(key, fallback) {
+      if (window.RogueStoreI18n && RogueStoreI18n.t) return RogueStoreI18n.t(key);
+      return fallback;
     }
-    if (!RogueCatalog.loaded) return "Loading…";
-    return kind === "skills" ? "No skills yet." : "No MCP servers yet.";
+    if (hasActiveFilters()) return tx("noResults", "No results found.");
+    if (kind === "assets") {
+      if (!RogueCatalog.assetsLoaded && !(RogueCatalog.assets || []).length) {
+        return tx("loading", "Loading…");
+      }
+      return tx("noAssets", "No assets yet.");
+    }
+    if (!RogueCatalog.loaded) return tx("loading", "Loading…");
+    return kind === "skills"
+      ? tx("noSkills", "No skills yet.")
+      : tx("noServers", "No MCP servers yet.");
   }
 
   function hasActiveFilters() {

@@ -2,12 +2,17 @@
  * @Author: rogue-dev-studio
  * @Date: 2026-09-20 10:45:00
  * @Last Modified by: rogue-dev-studio
- * @Last Modified time: 2026-09-22 21:00:00
+ * @Last Modified time: 2026-09-26 14:30:00
  */
 (function () {
   var base = document.body.getAttribute("data-base") || "./";
   if (base.slice(-1) !== "/") base += "/";
   var studioHome = "https://rogue-dev-studio.github.io/";
+  var I18n = window.RogueStoreI18n;
+
+  function t(key) {
+    return I18n ? I18n.t(key) : key;
+  }
 
   function href(path) {
     return base + path.replace(/^\//, "");
@@ -23,14 +28,14 @@
     return href("assets/");
   }
 
-  function searchPlaceholder() {
+  function searchPlaceholderKey() {
     var path = (location.pathname || "").toLowerCase();
-    if (path.indexOf("/servers") !== -1) return "Search MCP servers...";
-    if (path.indexOf("/skills") !== -1) return "Search agent skills...";
+    if (path.indexOf("/servers") !== -1) return "searchServers";
+    if (path.indexOf("/skills") !== -1) return "searchSkills";
     if (path.indexOf("asset-store") === -1 && /(?:^|\/)assets(?:\/|$)/.test(path)) {
-      return "Search assets...";
+      return "searchAssets";
     }
-    return "Search catalog...";
+    return "searchCatalog";
   }
 
   function injectNav() {
@@ -42,8 +47,10 @@
       q = new URLSearchParams(location.search).get("q") || "";
     } catch (err) {}
 
+    var ph = t(searchPlaceholderKey()).replace(/"/g, "&quot;");
+
     mount.innerHTML =
-      '<a class="brand" href="' + href("") + '">Rogue Asset Store</a>' +
+      '<a class="brand" href="' + href("") + '">' + t("brand") + "</a>" +
       '<form class="site-header-search" action="' + searchTarget() + '" method="get" role="search">' +
         '<span class="search-icon" aria-hidden="true">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -51,71 +58,89 @@
             '<path d="M16.5 16.5L21 21"></path>' +
           "</svg>" +
         "</span>" +
-        '<label class="sr-only" for="site-header-q">Search</label>' +
+        '<label class="sr-only" for="site-header-q">' + t("search") + "</label>" +
         '<input id="site-header-q" type="search" name="q" data-site-search data-catalog-search placeholder="' +
-          searchPlaceholder().replace(/"/g, "&quot;") +
+          ph +
           '" value="' +
           String(q).replace(/"/g, "&quot;") +
           '" autocomplete="off" />' +
       "</form>" +
-      '<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">' +
+      '<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="' +
+        t("openMenu") +
+        '">' +
         '<span class="nav-toggle-bar" aria-hidden="true"></span>' +
         '<span class="nav-toggle-bar" aria-hidden="true"></span>' +
         '<span class="nav-toggle-bar" aria-hidden="true"></span>' +
       "</button>" +
-      '<nav class="nav" id="site-nav" aria-label="Primary">' +
+      '<nav class="nav" id="site-nav" aria-label="' + t("navPrimary") + '">' +
         '<div class="nav-dd">' +
-          '<button type="button" class="nav-dd-btn" aria-expanded="false" aria-haspopup="true" aria-label="MCP Servers" data-tooltip="MCP Servers">' +
+          '<button type="button" class="nav-dd-btn" aria-expanded="false" aria-haspopup="true" aria-label="' +
+            t("navMcp") +
+            '" data-tooltip="' +
+            t("navMcp") +
+            '">' +
             '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">' +
               '<path d="M9 2v6"></path><path d="M15 2v6"></path>' +
               '<rect x="6" y="8" width="12" height="6" rx="1.5"></rect>' +
               '<path d="M12 14v8"></path>' +
             "</svg>" +
-            '<span class="nav-label">MCP Servers</span>' +
+            '<span class="nav-label">' + t("navMcp") + "</span>" +
           "</button>" +
           '<div class="nav-dd-menu" role="menu">' +
-            '<a href="' + href("servers/") + '" role="menuitem">All Servers</a>' +
-            '<a href="' + href("servers/categories/") + '" role="menuitem">Categories</a>' +
-            '<a href="' + href("servers/tags/") + '" role="menuitem">Tags</a>' +
-            '<a href="' + href("servers/top/") + '" role="menuitem">Top Servers</a>' +
+            '<a href="' + href("servers/") + '" role="menuitem">' + t("navAllServers") + "</a>" +
+            '<a href="' + href("servers/categories/") + '" role="menuitem">' + t("navCategories") + "</a>" +
+            '<a href="' + href("servers/tags/") + '" role="menuitem">' + t("navTags") + "</a>" +
+            '<a href="' + href("servers/top/") + '" role="menuitem">' + t("navTopServers") + "</a>" +
           "</div>" +
         "</div>" +
         '<div class="nav-dd">' +
-          '<button type="button" class="nav-dd-btn" aria-expanded="false" aria-haspopup="true" aria-label="Agent Skills" data-tooltip="Agent Skills">' +
+          '<button type="button" class="nav-dd-btn" aria-expanded="false" aria-haspopup="true" aria-label="' +
+            t("navSkills") +
+            '" data-tooltip="' +
+            t("navSkills") +
+            '">' +
             '<svg class="nav-icon nav-icon-fill" viewBox="0 0 24 24" aria-hidden="true">' +
               '<rect x="3.5" y="3.5" width="7" height="7" rx="1.2"></rect>' +
               '<rect x="13.5" y="3.5" width="7" height="7" rx="1.2"></rect>' +
               '<rect x="3.5" y="13.5" width="7" height="7" rx="1.2"></rect>' +
               '<rect x="13.5" y="13.5" width="7" height="7" rx="1.2"></rect>' +
             "</svg>" +
-            '<span class="nav-label">Agent Skills</span>' +
+            '<span class="nav-label">' + t("navSkills") + "</span>" +
           "</button>" +
           '<div class="nav-dd-menu" role="menu">' +
-            '<a href="' + href("skills/") + '" role="menuitem">All Skills</a>' +
-            '<a href="' + href("skills/categories/") + '" role="menuitem">Categories</a>' +
-            '<a href="' + href("skills/tags/") + '" role="menuitem">Tags</a>' +
-            '<a href="' + href("skills/top/") + '" role="menuitem">Top Skills</a>' +
+            '<a href="' + href("skills/") + '" role="menuitem">' + t("navAllSkills") + "</a>" +
+            '<a href="' + href("skills/categories/") + '" role="menuitem">' + t("navCategories") + "</a>" +
+            '<a href="' + href("skills/tags/") + '" role="menuitem">' + t("navTags") + "</a>" +
+            '<a href="' + href("skills/top/") + '" role="menuitem">' + t("navTopSkills") + "</a>" +
           "</div>" +
         "</div>" +
         '<div class="nav-dd">' +
-          '<button type="button" class="nav-dd-btn" aria-expanded="false" aria-haspopup="true" aria-label="Assets" data-tooltip="Assets">' +
+          '<button type="button" class="nav-dd-btn" aria-expanded="false" aria-haspopup="true" aria-label="' +
+            t("navAssets") +
+            '" data-tooltip="' +
+            t("navAssets") +
+            '">' +
             '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">' +
               '<path d="M4 7h16v12H4z"></path><path d="M8 7V5h8v2"></path>' +
             "</svg>" +
-            '<span class="nav-label">Assets</span>' +
+            '<span class="nav-label">' + t("navAssets") + "</span>" +
           "</button>" +
           '<div class="nav-dd-menu" role="menu">' +
-            '<a href="' + href("assets/") + '" role="menuitem">All Assets</a>' +
-            '<a href="' + href("assets/categories/") + '" role="menuitem">Categories</a>' +
-            '<a href="' + href("assets/tags/") + '" role="menuitem">Tags</a>' +
-            '<a href="' + href("assets/top/") + '" role="menuitem">Top Assets</a>' +
+            '<a href="' + href("assets/") + '" role="menuitem">' + t("navAllAssets") + "</a>" +
+            '<a href="' + href("assets/categories/") + '" role="menuitem">' + t("navCategories") + "</a>" +
+            '<a href="' + href("assets/tags/") + '" role="menuitem">' + t("navTags") + "</a>" +
+            '<a href="' + href("assets/top/") + '" role="menuitem">' + t("navTopAssets") + "</a>" +
           "</div>" +
         "</div>" +
-        '<a class="nav-icon-link" href="' + href("saved/") + '" aria-label="Saved Assets" data-tooltip="Saved Assets">' +
+        '<a class="nav-icon-link" href="' + href("saved/") + '" aria-label="' +
+          t("navSaved") +
+          '" data-tooltip="' +
+          t("navSaved") +
+          '">' +
           '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">' +
             '<path d="M7 3h10v18l-5-3.2L7 21V3z"></path>' +
           "</svg>" +
-          '<span class="nav-label">Saved Assets</span>' +
+          '<span class="nav-label">' + t("navSaved") + "</span>" +
         "</a>" +
       "</nav>";
   }
@@ -156,7 +181,7 @@
 
     ensureBootstrapIcons();
 
-    var contactUrl = studioHome + "#contact";
+    var contactUrl = studioHome + "contact/";
     var stores =
       (window.RogueCatalog && RogueCatalog.studioStores) || {
         gumroad: "https://roguedevstudio.gumroad.com",
@@ -167,7 +192,6 @@
         itch: "https://rogue-dev-studio.itch.io"
       };
 
-    // Same set as https://rogue-dev-studio.github.io/ contact socials (Bootstrap Icons).
     var socials = [
       { label: "GitHub", url: "https://github.com/rogue-dev-studio", icon: "github" },
       { label: "GitLab", url: "https://gitlab.com/rogue-dev-studio", icon: "gitlab" },
@@ -214,32 +238,45 @@
       }
     ];
 
+    var lang = I18n ? I18n.getLang() : "en";
+
     mount.className = "site-footer";
     mount.setAttribute("data-site-footer", "");
     mount.innerHTML =
       '<div class="site-footer-main">' +
         '<div class="site-footer-brand">' +
-          '<a class="site-footer-logo" href="' + href("") + '">Rogue Asset Store</a>' +
-          '<p>Browse MCP servers, agent skills, and digital assets curated for AI builders.</p>' +
+          '<a class="site-footer-logo" href="' + href("") + '">' + t("brand") + "</a>" +
+          "<p>" + t("footerBrand") + "</p>" +
         "</div>" +
         '<div class="site-footer-cols">' +
           '<div class="site-footer-col site-footer-lang-col">' +
-            "<h3>Language</h3>" +
-            '<label class="sr-only" for="site-footer-lang">Language</label>' +
-            '<select id="site-footer-lang" class="site-footer-lang" data-site-lang aria-label="Language">' +
-              '<option value="en" selected>English</option>' +
+            "<h3>" + t("langHeading") + "</h3>" +
+            '<label class="sr-only" for="site-footer-lang">' + t("langLabel") + "</label>" +
+            '<select id="site-footer-lang" class="site-footer-lang" data-site-lang aria-label="' +
+              t("langLabel") +
+              '">' +
+              '<option value="en"' +
+              (lang === "en" ? " selected" : "") +
+              ">English</option>" +
+              '<option value="id"' +
+              (lang === "id" ? " selected" : "") +
+              ">Bahasa Indonesia</option>" +
             "</select>" +
           "</div>" +
           '<div class="site-footer-col">' +
-            "<h3>Browse</h3>" +
-            '<a href="' + href("servers/") + '">MCP Servers</a>' +
-            '<a href="' + href("skills/") + '">Agent Skills</a>' +
-            '<a href="' + href("assets/") + '">Assets</a>' +
-            '<a href="https://github.com/rogue-dev-studio/ai-agents-rogue" rel="noopener" target="_blank">Agents Complete</a>' +
-            '<a href="https://github.com/rogue-dev-studio/ai-agents-rogue-programmer" rel="noopener" target="_blank">Agent Programmer</a>' +
+            "<h3>" + t("browseHeading") + "</h3>" +
+            '<a href="' + href("servers/") + '">' + t("navMcp") + "</a>" +
+            '<a href="' + href("skills/") + '">' + t("navSkills") + "</a>" +
+            '<a href="' + href("assets/") + '">' + t("navAssets") + "</a>" +
+            '<a href="https://github.com/rogue-dev-studio/ai-agents-rogue" rel="noopener" target="_blank">' +
+              t("agentsComplete") +
+              "</a>" +
+            '<a href="https://github.com/rogue-dev-studio/ai-agents-rogue-programmer" rel="noopener" target="_blank">' +
+              t("agentProgrammer") +
+              "</a>" +
           "</div>" +
           '<div class="site-footer-col">' +
-            "<h3>Sources</h3>" +
+            "<h3>" + t("sourcesHeading") + "</h3>" +
             sources
               .map(function (s) {
                 return externalLink(s.label, s.url);
@@ -247,15 +284,15 @@
               .join("") +
           "</div>" +
           '<div class="site-footer-col">' +
-            "<h3>Company</h3>" +
-            '<a href="' + studioHome + '" rel="noopener">Studio site</a>' +
-            '<a href="' + href("privacy/") + '">Privacy</a>' +
-            '<a href="' + href("terms/") + '">Terms</a>' +
-            '<a href="' + contactUrl + '" rel="noopener">Contact us</a>' +
+            "<h3>" + t("companyHeading") + "</h3>" +
+            '<a href="' + studioHome + '" rel="noopener">' + t("studioSite") + "</a>" +
+            '<a href="' + href("privacy/") + '">' + t("privacy") + "</a>" +
+            '<a href="' + href("terms/") + '">' + t("terms") + "</a>" +
+            '<a href="' + contactUrl + '" rel="noopener">' + t("contactUs") + "</a>" +
           "</div>" +
           '<div class="site-footer-col">' +
-            "<h3>Support</h3>" +
-            '<div class="site-footer-sponsors" aria-label="Sponsor links">' +
+            "<h3>" + t("supportHeading") + "</h3>" +
+            '<div class="site-footer-sponsors" aria-label="' + t("sponsorsAria") + '">' +
               sponsors
                 .map(function (s) {
                   return (
@@ -274,8 +311,10 @@
         "</div>" +
       "</div>" +
       '<div class="site-footer-bottom">' +
-        '<p>© 2026 Rogue Asset Store</p>' +
-        '<div class="site-footer-socials site-footer-socials--bottom" aria-label="Social links">' +
+        "<p>© 2026 Rogue Asset Store</p>" +
+        '<div class="site-footer-socials site-footer-socials--bottom" aria-label="' +
+          t("socialsAria") +
+          '">' +
           socials
             .map(function (s) {
               return (
@@ -319,12 +358,14 @@
     });
   }
 
+  var docChromeWired = false;
+
   function wireDropdowns() {
     var menus = document.querySelectorAll(".nav-dd");
     if (!menus.length) return;
 
     function closeAll(except) {
-      menus.forEach(function (dd) {
+      document.querySelectorAll(".nav-dd").forEach(function (dd) {
         if (except && dd === except) return;
         dd.classList.remove("is-open");
         var btn = dd.querySelector(".nav-dd-btn");
@@ -347,16 +388,19 @@
       });
     });
 
-    document.addEventListener("click", function () {
-      closeAll();
-    });
-
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
+    if (!docChromeWired) {
+      docChromeWired = true;
+      document.addEventListener("click", function () {
         closeAll();
         closeMobileNav();
-      }
-    });
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          closeAll();
+          closeMobileNav();
+        }
+      });
+    }
   }
 
   function closeMobileNav() {
@@ -367,7 +411,7 @@
     document.body.classList.remove("nav-open");
     if (toggle) {
       toggle.setAttribute("aria-expanded", "false");
-      toggle.setAttribute("aria-label", "Open menu");
+      toggle.setAttribute("aria-label", t("openMenu"));
     }
   }
 
@@ -382,31 +426,48 @@
       var open = top.classList.toggle("is-nav-open");
       document.body.classList.toggle("nav-open", open);
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
-      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      toggle.setAttribute("aria-label", open ? t("closeMenu") : t("openMenu"));
     });
 
     nav.addEventListener("click", function (e) {
       e.stopPropagation();
-      if (e.target && e.target.closest && e.target.closest('a[href]')) {
+      if (e.target && e.target.closest && e.target.closest("a[href]")) {
         closeMobileNav();
       }
     });
-
-    document.addEventListener("click", function () {
-      closeMobileNav();
-    });
   }
 
-  injectNav();
-  injectFooter();
-  wireHeaderSearch();
-  wireDropdowns();
-  wireMobileNav();
+  function refreshChrome() {
+    injectNav();
+    injectFooter();
+    wireHeaderSearch();
+    wireDropdowns();
+    wireMobileNav();
+    if (I18n) {
+      I18n.wireSelects();
+      I18n.applyDocument(I18n.getLang());
+      I18n.syncSelects(I18n.getLang());
+    }
+  }
+
+  if (I18n) {
+    I18n.apply(I18n.getLang());
+  }
+
+  refreshChrome();
+
+  if (I18n) {
+    window.addEventListener("site-lang-change", function () {
+      refreshChrome();
+    });
+  }
 
   document.querySelectorAll(".subnav a").forEach(function (a) {
     try {
       var here = location.pathname.replace(/\/index\.html$/, "").replace(/\/+$/, "");
-      var link = new URL(a.getAttribute("href"), location.href).pathname.replace(/\/index\.html$/, "").replace(/\/+$/, "");
+      var link = new URL(a.getAttribute("href"), location.href).pathname
+        .replace(/\/index\.html$/, "")
+        .replace(/\/+$/, "");
       if (here === link) a.setAttribute("aria-current", "page");
     } catch (err) {}
   });

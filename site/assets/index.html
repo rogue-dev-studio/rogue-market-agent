@@ -23,22 +23,22 @@
     <div class="browse-shell" data-filter-layout="sidebar">
       <aside class="browse-sidebar" aria-label="Filters">
         <div class="filter-block">
-          <h2 class="filter-heading">Catalog</h2>
-          <div class="kind-tabs kind-tabs-stack" role="tablist" aria-label="Catalog kind">
-            <a class="kind-tab" href="../servers/">MCP Servers</a>
-            <a class="kind-tab" href="../skills/">Agent Skills</a>
-            <a class="kind-tab is-active" href="../assets/" aria-current="page">Assets</a>
+          <h2 class="filter-heading" data-i18n="catalog">Catalog</h2>
+          <div class="kind-tabs kind-tabs-stack" role="tablist" data-i18n-aria="catalogKind" aria-label="Catalog kind">
+            <a class="kind-tab" href="../servers/" data-i18n="navMcp">MCP Servers</a>
+            <a class="kind-tab" href="../skills/" data-i18n="navSkills">Agent Skills</a>
+            <a class="kind-tab is-active" href="../assets/" aria-current="page" data-i18n="navAssets">Assets</a>
           </div>
         </div>
         <div class="filter-block filter-block-categories">
-          <h2 class="filter-heading">Categories</h2>
-          <nav class="filter-tree" data-catalog-chips aria-label="Categories"></nav>
+          <h2 class="filter-heading" data-i18n="categories">Categories</h2>
+          <nav class="filter-tree" data-catalog-chips data-i18n-aria="categories" aria-label="Categories"></nav>
         </div>
       </aside>
 
       <div class="browse-content">
         <section class="browse-hero browse-hero-compact">
-          <p class="breadcrumb"><a href="../">Home</a> <span>/</span> <a href="../assets/">Assets</a> <span>/</span> <span aria-current="page">All</span></p>
+          <p class="breadcrumb"><a href="../" data-i18n="home">Home</a> <span>/</span> <a href="../assets/" data-i18n="navAssets">Assets</a> <span>/</span> <span aria-current="page" data-i18n="all">All</span></p>
           <div class="browse-facet-row" data-browse-facets></div>
           <div class="search-bar search-bar-lg">
             <span class="search-icon" aria-hidden="true">
@@ -47,8 +47,8 @@
                 <path d="M20 20l-3.5-3.5"></path>
               </svg>
             </span>
-            <label class="sr-only" for="catalog-q">Search</label>
-            <input id="catalog-q" type="search" data-catalog-search placeholder="Search assets..." autocomplete="off" />
+            <label class="sr-only" for="catalog-q" data-i18n="search">Search</label>
+            <input id="catalog-q" type="search" data-catalog-search data-i18n-placeholder="searchAssetsPage" placeholder="Search assets..." autocomplete="off" />
           </div>
         </section>
 
@@ -68,6 +68,7 @@
   <script src="../asset-store/catalog-assets-sketchfab.js" defer></script>
   <script src="../asset-store/catalog-asset-stores.js?v=20260924f" defer></script>
   <script src="../asset-store/site-root.js" defer></script>
+  <script src="../asset-store/site-i18n.js" defer></script>
   <script src="../asset-store/nav.js" defer></script>
   <script src="../asset-store/catalog.js?v=20260924f" defer></script>
 </body>

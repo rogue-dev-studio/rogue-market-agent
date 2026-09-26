@@ -43,9 +43,17 @@
   }
 
   function emptyHtml(kind) {
-    if (kind === "servers") return '<li class="empty-state">No MCP servers yet.</li>';
-    if (kind === "assets") return '<li class="empty-state">No assets yet.</li>';
-    return '<li class="empty-state">No skills yet.</li>';
+    function tx(key, fallback) {
+      if (window.RogueStoreI18n && RogueStoreI18n.t) return RogueStoreI18n.t(key);
+      return fallback;
+    }
+    if (kind === "servers") {
+      return '<li class="empty-state">' + tx("noServers", "No MCP servers yet.") + "</li>";
+    }
+    if (kind === "assets") {
+      return '<li class="empty-state">' + tx("noAssets", "No assets yet.") + "</li>";
+    }
+    return '<li class="empty-state">' + tx("noSkills", "No skills yet.") + "</li>";
   }
 
   function diversityKey(item, kind) {
